@@ -83,64 +83,104 @@ export function ScholarshipFilters({ totalResults }: ScholarshipFiltersProps) {
           {filters.searchQuery && (
             <span className="inline-flex items-center gap-1 text-xs bg-[#EEEAFE] text-[#5B4BDB] px-2.5 py-1 rounded-full font-medium">
               Search: &quot;{filters.searchQuery}&quot;
-              <button onClick={() => updateFilter('searchQuery', '')}>
-                <X className="w-3 h-3 hover:text-slate-800" />
+              <button
+                type="button"
+                onClick={() => updateFilter('searchQuery', '')}
+                aria-label="Remove search filter"
+                className="hover:text-slate-800 focus:outline-none"
+              >
+                <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {filters.educationLevel !== 'All' && (
             <span className="inline-flex items-center gap-1 text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-medium">
               {filters.educationLevel}
-              <button onClick={() => updateFilter('educationLevel', 'All')}>
-                <X className="w-3 h-3 hover:text-indigo-900" />
+              <button
+                type="button"
+                onClick={() => updateFilter('educationLevel', 'All')}
+                aria-label="Remove education level filter"
+                className="hover:text-indigo-900 focus:outline-none"
+              >
+                <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {filters.category !== 'All' && (
             <span className="inline-flex items-center gap-1 text-xs bg-teal-50 text-teal-700 px-2.5 py-1 rounded-full font-medium">
               {filters.category}
-              <button onClick={() => updateFilter('category', 'All')}>
-                <X className="w-3 h-3 hover:text-teal-900" />
+              <button
+                type="button"
+                onClick={() => updateFilter('category', 'All')}
+                aria-label="Remove social category filter"
+                className="hover:text-teal-900 focus:outline-none"
+              >
+                <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {filters.providerType !== 'All' && (
             <span className="inline-flex items-center gap-1 text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full font-medium">
               {filters.providerType}
-              <button onClick={() => updateFilter('providerType', 'All')}>
-                <X className="w-3 h-3 hover:text-amber-900" />
+              <button
+                type="button"
+                onClick={() => updateFilter('providerType', 'All')}
+                aria-label="Remove provider type filter"
+                className="hover:text-amber-900 focus:outline-none"
+              >
+                <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {filters.state !== 'All India' && (
             <span className="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full font-medium">
               State: {filters.state}
-              <button onClick={() => updateFilter('state', 'All India')}>
-                <X className="w-3 h-3 hover:text-slate-900" />
+              <button
+                type="button"
+                onClick={() => updateFilter('state', 'All India')}
+                aria-label="Remove state filter"
+                className="hover:text-slate-900 focus:outline-none"
+              >
+                <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {filters.minAmount > 0 && (
             <span className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-medium">
               Min ₹{filters.minAmount.toLocaleString('en-IN')}
-              <button onClick={() => updateFilter('minAmount', 0)}>
-                <X className="w-3 h-3 hover:text-emerald-900" />
+              <button
+                type="button"
+                onClick={() => updateFilter('minAmount', 0)}
+                aria-label="Reset minimum amount filter"
+                className="hover:text-emerald-900 focus:outline-none"
+              >
+                <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {filters.maxIncome < 1500000 && (
             <span className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium">
               Income ≤ ₹{(filters.maxIncome / 100000).toFixed(1)}L
-              <button onClick={() => updateFilter('maxIncome', 1500000)}>
-                <X className="w-3 h-3 hover:text-blue-900" />
+              <button
+                type="button"
+                onClick={() => updateFilter('maxIncome', 1500000)}
+                aria-label="Reset maximum income filter"
+                className="hover:text-blue-900 focus:outline-none"
+              >
+                <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {filters.onlyEligible && (
             <span className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-medium">
               Only Eligible
-              <button onClick={() => updateFilter('onlyEligible', false)}>
-                <X className="w-3 h-3 hover:text-emerald-900" />
+              <button
+                type="button"
+                onClick={() => updateFilter('onlyEligible', false)}
+                aria-label="Disable only eligible filter"
+                className="hover:text-emerald-900 focus:outline-none"
+              >
+                <X className="w-3 h-3" />
               </button>
             </span>
           )}

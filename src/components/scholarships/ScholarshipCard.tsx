@@ -164,7 +164,8 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
                     ? 'bg-[#171B2D] text-white border-[#171B2D]'
                     : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                 }`}
-                title="Compare scholarship"
+                title={isSelectedForCompare ? 'Selected for comparison' : 'Compare scholarship'}
+                aria-label={isSelectedForCompare ? 'Selected for comparison' : 'Compare scholarship'}
               >
                 <Layers className="w-4 h-4" />
               </button>
@@ -181,6 +182,7 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
                     : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                 }`}
                 title={isSaved ? 'Remove from saved' : 'Save scholarship'}
+                aria-label={isSaved ? 'Remove from saved' : 'Save scholarship'}
               >
                 <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-rose-500 text-rose-500' : ''}`} />
               </button>
@@ -231,6 +233,7 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
                   : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
               }`}
               title={isSelectedForCompare ? 'Selected for comparison' : 'Add to compare'}
+              aria-label={isSelectedForCompare ? 'Selected for comparison' : 'Add to compare'}
             >
               <Layers className="w-4 h-4" />
             </button>
@@ -246,6 +249,7 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
                   : 'text-slate-400 hover:text-rose-500 hover:bg-slate-100'
               }`}
               title={isSaved ? 'Remove from saved' : 'Save scholarship'}
+              aria-label={isSaved ? 'Remove from saved' : 'Save scholarship'}
             >
               <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-rose-500' : ''}`} />
             </button>

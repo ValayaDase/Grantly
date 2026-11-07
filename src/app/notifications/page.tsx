@@ -291,6 +291,7 @@ export default function NotificationsPage() {
 
               <input
                 type="text"
+                aria-label="Search notifications"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search notifications..."

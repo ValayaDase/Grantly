@@ -1,6 +1,8 @@
 # GRANTLY — Unified Scholarship Discovery & Management Platform
 
-> **A browser-side prototype for exploring scholarship records, reviewing preliminary profile-based eligibility, comparing options, and tracking application preparation.**
+> **A modern, fintech-grade EdTech platform designed to transform scholarship discovery, deterministic eligibility evaluation, application tracking, and document management for Indian students.**
+>
+> 🌐 **Live Demo:** [https://grantly-platform.vercel.app](https://grantly-platform.vercel.app)
 
 > [!IMPORTANT]
 > GRANTLY currently uses 18 seeded scholarship records, a seeded demo student, and browser `localStorage`. The catalog is not a verified live feed; login is not secure authentication; application statuses are user-managed; and the Document Vault stores metadata only, not file contents. Confirm current rules and deadlines with each provider. This prototype is not a source of official eligibility decisions.

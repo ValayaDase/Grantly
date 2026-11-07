@@ -1,26 +1,89 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --primary: #5B4BDB;
+    --primary-hover: #4838C2;
+    --primary-light: #EEEAFE;
+    --accent: #18B6A4;
+    --accent-hover: #0E9787;
+    --background: #F8F9FC;
+    --foreground: #171B2D;
+    --muted: #72788A;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F3F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Glass & Card styles */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.card-hover-effect {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px -10px rgba(91, 75, 219, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+/* Custom gradients */
+.gradient-primary {
+  background: linear-gradient(135deg, #5B4BDB 0%, #7B68EE 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #18B6A4 0%, #109485 100%);
+}
+
+.gradient-card-header {
+  background: linear-gradient(180deg, #F9FAFD 0%, #FFFFFF 100%);
+}
+
+.badge-pulse {
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(24, 182, 164, 0.5);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(24, 182, 164, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(24, 182, 164, 0);
+  }
 }

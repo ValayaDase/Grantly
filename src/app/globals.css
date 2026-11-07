@@ -78,6 +78,14 @@
   color: #F8F9FC !important;
 }
 
+.text-slate-400 {
+  color: #64748B !important;
+}
+
+.dark .text-slate-400 {
+  color: #9BA3B8 !important;
+}
+
 .dark .text-slate-700,
 .dark .text-slate-800 {
   color: #E2E8F0 !important;

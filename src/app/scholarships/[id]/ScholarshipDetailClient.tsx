@@ -37,6 +37,10 @@ import {
   Zap,
   Target,
   FileText,
+  CalendarPlus,
+  Share2,
+  Download,
+  Check,
 } from 'lucide-react';
 
 interface ScholarshipDetailClientProps {
@@ -62,6 +66,7 @@ export function ScholarshipDetailClient({
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [appNotes, setAppNotes] = useState('');
   const [refNumber, setRefNumber] = useState('');
+  const [shareSuccess, setShareSuccess] = useState(false);
 
   const scholarship = allScholarships.find(
     (s) => s.id === scholarshipId
@@ -133,6 +138,82 @@ export function ScholarshipDetailClient({
     router.push('/applications');
   };
 
+  const handleAddToCalendar = () => {
+    if (!scholarship) return;
+    const title = scholarship.title;
+    const description = `Deadline for ${scholarship.title} offered by ${scholarship.provider}. Award value: ${scholarship.amountFormatted}`;
+    const cleanDate = scholarship.deadline.replace(/-/g, '');
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//GRANTLY//Scholarship Calendar//EN',
+      'BEGIN:VEVENT',
+      `SUMMARY:${title} Deadline`,
+      `DESCRIPTION:${description}`,
+      `DTSTART;VALUE=DATE:${cleanDate}`,
+      `DTEND;VALUE=DATE:${cleanDate}`,
+      'STATUS:CONFIRMED',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${scholarship.id}-deadline.ics`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleShare = async () => {
+    if (!scholarship) return;
+    const shareData = {
+      title: scholarship.title,
+      text: `Check out ${scholarship.title} on GRANTLY! Value: ${scholarship.amountFormatted}`,
+      url: typeof window !== 'undefined' ? window.location.href : '',
+    };
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // cancelled
+      }
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      setShareSuccess(true);
+      setTimeout(() => setShareSuccess(false), 2500);
+    }
+  };
+
+  const handleExportBrief = () => {
+    if (!scholarship) return;
+    const brief = {
+      title: scholarship.title,
+      provider: scholarship.provider,
+      providerType: scholarship.providerType,
+      category: scholarship.category,
+      amount: scholarship.amountFormatted,
+      deadline: scholarship.deadline,
+      eligibilityStatus: eligibility.status,
+      matchScore: match.totalScore,
+      rulesChecked: eligibility.rules,
+      requiredDocuments: scholarship.requiredDocuments,
+      exportedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(brief, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${scholarship.id}-dossier.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
 const eligibilityConfig = {
   ELIGIBLE: {
     label: 'Eligible',
@@ -197,6 +278,40 @@ const eligibilityConfig = {
           </Link>
 
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={handleAddToCalendar}
+              title="Add deadline to Calendar (.ics)"
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:border-amber-300 hover:text-amber-600 transition-all shadow-xs"
+            >
+              <CalendarPlus className="w-4 h-4 text-amber-500" />
+              <span className="hidden sm:inline">Calendar</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleShare}
+              title="Share scholarship link"
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:border-teal-300 hover:text-teal-600 transition-all shadow-xs"
+            >
+              {shareSuccess ? (
+                <Check className="w-4 h-4 text-teal-600" />
+              ) : (
+                <Share2 className="w-4 h-4 text-teal-500" />
+              )}
+              <span>{shareSuccess ? 'Copied' : 'Share'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleExportBrief}
+              title="Export scholarship checklist (JSON)"
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:border-violet-300 hover:text-[#5B4BDB] transition-all shadow-xs"
+            >
+              <Download className="w-4 h-4 text-[#5B4BDB]" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+
             <button
               onClick={() => toggleComparison(scholarship.id)}
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold border transition-all ${

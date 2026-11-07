@@ -291,7 +291,7 @@ export default function OnboardingPage() {
       <div className="mx-auto grid max-w-7xl gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[320px_1fr] lg:py-12">
 
         {/* Left panel */}
-        <aside className="space-y-6">
+        <aside className="hidden lg:block space-y-6">
           <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-[#5141CA] via-[#6554DF] to-[#8979F0] p-7 text-white shadow-xl shadow-[#5B4BDB]/15">
             <div className="mb-7 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
               <GraduationCap size={26} />

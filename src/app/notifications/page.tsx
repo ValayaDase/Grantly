@@ -186,7 +186,7 @@ export default function NotificationsPage() {
               </div>
 
               {unreadCount > 0 && (
-                <div className="absolute -bottom-3 -left-8 px-4 py-2 rounded-xl bg-white text-[#29205F] shadow-lg">
+                <div className="absolute -bottom-3 left-0 sm:-left-8 px-4 py-2 rounded-xl bg-white text-[#29205F] shadow-lg">
                   <p className="text-[10px] font-bold uppercase tracking-wider">
                     Needs attention
                   </p>

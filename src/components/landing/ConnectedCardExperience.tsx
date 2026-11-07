@@ -392,87 +392,11 @@ export default function ConnectedCardExperience() {
       });
 
       // ========================================================
-      // TABLET EXPERIENCE (641px - 1023px)
+      // RESPONSIVE CLEANUP (< 1024px)
+      // On mobile & tablets, GSAP properties are cleared and the
+      // clean responsive stacked-grid view renders natively.
       // ========================================================
-      mm.add('(min-width: 641px) and (max-width: 1023px)', () => {
-        gsap.set(hiwCard1Ref.current, { x: 0, y: -20, scale: 0.96, opacity: 1, zIndex: 10 });
-        gsap.set(hiwCard2Ref.current, { x: -600, y: -20, scale: 1, opacity: 0, zIndex: 20 });
-        gsap.set(hiwCard3Ref.current, { x: 600, y: -20, scale: 1, opacity: 0, zIndex: 30 });
-        gsap.set(handoffCardRef.current, { x: 0, y: 400, scale: 1, opacity: 0, zIndex: 50 });
-
-        gsap.set(card4HiwContentRef.current, { opacity: 1 });
-        gsap.set(card4CuratedContentRef.current, { opacity: 0 });
-
-        gsap.set(
-          [schCard1Ref.current, schCard2Ref.current, schCard3Ref.current, schCard4Ref.current],
-          { x: 0, y: 35, scale: 0.98, opacity: 0 }
-        );
-        gsap.set(schCard1Ref.current, { zIndex: 44 });
-        gsap.set(schCard2Ref.current, { zIndex: 43 });
-        gsap.set(schCard3Ref.current, { zIndex: 42 });
-        gsap.set(schCard4Ref.current, { zIndex: 41 });
-
-        gsap.set(howItWorksHeaderRef.current, { y: 0, opacity: 1 });
-        gsap.set(featuredHeaderRef.current, { y: 30, opacity: 0, pointerEvents: 'none' });
-
-        const tl = gsap.timeline({ defaults: { ease: 'power1.inOut' } });
-
-        // Stacking
-        tl.to(hiwCard1Ref.current, { scale: 1.0, duration: 0.5 })
-          .to(hiwCard1Ref.current, { y: -38, scale: 0.94, opacity: 0.85, duration: 0.8 }, 'h2')
-          .to(hiwCard2Ref.current, { x: 0, opacity: 1, scale: 1, duration: 0.8 }, 'h2')
-          .to(hiwCard1Ref.current, { y: -56, scale: 0.88, opacity: 0.7, duration: 0.8 }, 'h3')
-          .to(hiwCard2Ref.current, { y: -38, scale: 0.94, opacity: 0.85, duration: 0.8 }, 'h3')
-          .to(hiwCard3Ref.current, { x: 0, opacity: 1, scale: 1, duration: 0.8 }, 'h3')
-          .to(hiwCard1Ref.current, { y: -74, scale: 0.82, opacity: 0.5, duration: 0.8 }, 'h4')
-          .to(hiwCard2Ref.current, { y: -56, scale: 0.88, opacity: 0.7, duration: 0.8 }, 'h4')
-          .to(hiwCard3Ref.current, { y: -38, scale: 0.94, opacity: 0.85, duration: 0.8 }, 'h4')
-          .to(handoffCardRef.current, { y: -20, opacity: 1, scale: 1, duration: 0.8 }, 'h4');
-
-        // Drop from above title
-        tl.to([hiwCard1Ref.current, hiwCard2Ref.current, hiwCard3Ref.current], { y: -100, opacity: 0, duration: 0.6 }, 't_exit')
-          .to(howItWorksHeaderRef.current, { y: -45, opacity: 0, duration: 0.6 }, 't_exit')
-          .to(handoffCardRef.current, { y: -220, opacity: 0, duration: 0.4 }, 't_exit')
-          .to(featuredHeaderRef.current, { y: 0, opacity: 1, pointerEvents: 'auto', duration: 0.6 }, 't_feat')
-          .set(card4HiwContentRef.current, { opacity: 0 }, 't_feat')
-          .set(card4CuratedContentRef.current, { opacity: 1 }, 't_feat')
-          .set(handoffCardRef.current, { y: -460, rotation: -6, scale: 0.75, opacity: 1, zIndex: 50 }, 't_drop')
-          .to(handoffCardRef.current, { y: 55, rotation: 3, duration: 1.1, ease: 'power2.in' }, 't_drop')
-          .to(handoffCardRef.current, { y: 25, rotation: -1, duration: 0.22, ease: 'power2.out' }, 't_bounce')
-          .to(handoffCardRef.current, { y: 35, rotation: 0, duration: 0.2 }, 't_settle')
-          .set([schCard1Ref.current, schCard2Ref.current, schCard3Ref.current, schCard4Ref.current], { x: 0, y: 35, opacity: 1 }, 't_settle');
-
-        tl.to({}, { duration: 0.5 });
-
-        // Scatter together
-        tl.to(schCard1Ref.current, { x: -195, y: -80, rotation: 0, scale: 1, duration: 0.95 }, 't_scatter')
-          .to(schCard2Ref.current, { x: 195, y: -80, rotation: 0, scale: 1, duration: 0.95 }, 't_scatter')
-          .to(schCard3Ref.current, { x: -195, y: 165, rotation: 0, scale: 1, duration: 0.95 }, 't_scatter+=0.04')
-          .to(schCard4Ref.current, { x: 195, y: 165, rotation: 0, scale: 1, duration: 0.95 }, 't_scatter+=0.04')
-          .to(handoffCardRef.current, { opacity: 0, duration: 0.7 }, 't_scatter');
-
-        tl.to({}, { duration: 1.3 });
-
-        // Exit
-        tl.to(handoffCardRef.current, { opacity: 1, duration: 0.7 }, 't_back')
-          .to([schCard1Ref.current, schCard2Ref.current, schCard3Ref.current, schCard4Ref.current], { x: 0, y: 35, scale: 0.98, duration: 0.7 }, 't_back')
-          .to([schCard1Ref.current, schCard2Ref.current, schCard3Ref.current, schCard4Ref.current], { opacity: 0, duration: 0.35 }, 't_back+=0.5');
-
-        ScrollTrigger.create({
-          trigger: containerRef.current,
-          start: 'top top',
-          end: '+=4300',
-          pin: portalRef.current,
-          pinSpacing: true,
-          scrub: 1,
-          animation: tl,
-        });
-      });
-
-      // ========================================================
-      // MOBILE FALLBACK (<= 640px)
-      // ========================================================
-      mm.add('(max-width: 640px)', () => {
+      mm.add('(max-width: 1023px)', () => {
         const allCards = [
           hiwCard1Ref.current,
           hiwCard2Ref.current,
@@ -501,10 +425,10 @@ export default function ConnectedCardExperience() {
       ref={containerRef}
       className="relative bg-[#F8F9FC] overflow-clip"
     >
-      {/* DESKTOP / TABLET PINNED PORTAL */}
+      {/* DESKTOP PINNED PORTAL (>= 1024px) */}
       <div
         ref={portalRef}
-        className="hidden sm:flex min-h-screen w-full flex-col items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+        className="hidden lg:flex min-h-screen w-full flex-col items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden"
       >
         {/* SECTION A HEADER — HOW IT WORKS */}
         <div
@@ -547,7 +471,7 @@ export default function ConnectedCardExperience() {
           {/* ==================================================== */}
           <div
             ref={hiwCard1Ref}
-            className="absolute w-[680px] sm:w-[720px] lg:w-[760px] h-[330px] sm:h-[350px] bg-white rounded-[24px] border border-slate-200/80 shadow-lg shadow-slate-200/50 p-8 sm:p-9 flex flex-col justify-between transform-gpu will-change-transform"
+            className="absolute w-[92vw] sm:w-[680px] lg:w-[760px] max-w-[760px] h-[330px] sm:h-[350px] bg-white rounded-[24px] border border-slate-200/80 shadow-lg shadow-slate-200/50 p-8 sm:p-9 flex flex-col justify-between transform-gpu will-change-transform"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3.5">
@@ -601,7 +525,7 @@ export default function ConnectedCardExperience() {
           {/* ==================================================== */}
           <div
             ref={hiwCard2Ref}
-            className="absolute w-[680px] sm:w-[720px] lg:w-[760px] h-[330px] sm:h-[350px] bg-white rounded-[24px] border border-slate-200/80 shadow-lg shadow-slate-200/50 p-8 sm:p-9 flex flex-col justify-between transform-gpu will-change-transform"
+            className="absolute w-[92vw] sm:w-[680px] lg:w-[760px] max-w-[760px] h-[330px] sm:h-[350px] bg-white rounded-[24px] border border-slate-200/80 shadow-lg shadow-slate-200/50 p-8 sm:p-9 flex flex-col justify-between transform-gpu will-change-transform"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3.5">
@@ -655,7 +579,7 @@ export default function ConnectedCardExperience() {
           {/* ==================================================== */}
           <div
             ref={hiwCard3Ref}
-            className="absolute w-[680px] sm:w-[720px] lg:w-[760px] h-[330px] sm:h-[350px] bg-white rounded-[24px] border border-slate-200/80 shadow-lg shadow-slate-200/50 p-8 sm:p-9 flex flex-col justify-between transform-gpu will-change-transform"
+            className="absolute w-[92vw] sm:w-[680px] lg:w-[760px] max-w-[760px] h-[330px] sm:h-[350px] bg-white rounded-[24px] border border-slate-200/80 shadow-lg shadow-slate-200/50 p-8 sm:p-9 flex flex-col justify-between transform-gpu will-change-transform"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3.5">
@@ -710,7 +634,7 @@ export default function ConnectedCardExperience() {
           {/* ==================================================== */}
           <div
             ref={handoffCardRef}
-            className="absolute w-[680px] sm:w-[720px] lg:w-[760px] h-[330px] sm:h-[350px] bg-white rounded-[24px] border border-slate-200/80 shadow-xl shadow-indigo-500/10 p-8 sm:p-9 flex flex-col justify-between transform-gpu will-change-transform overflow-hidden"
+            className="absolute w-[92vw] sm:w-[680px] lg:w-[760px] max-w-[760px] h-[330px] sm:h-[350px] bg-white rounded-[24px] border border-slate-200/80 shadow-xl shadow-indigo-500/10 p-8 sm:p-9 flex flex-col justify-between transform-gpu will-change-transform overflow-hidden"
           >
             {/* CONTENT A: How It Works Step 04 — Track Your Applications */}
             <div
@@ -1020,89 +944,122 @@ export default function ConnectedCardExperience() {
         </div>
       </div>
 
-      {/* MOBILE ACCESSIBLE SEQUENTIAL VIEW (<= 640px) */}
-      <div className="sm:hidden px-4 py-14 space-y-12">
-        {/* Mobile Section 1: How It Works */}
-        <div className="space-y-5">
-          <div className="text-center space-y-1.5">
-            <span className="text-xs font-bold text-[#5B4BDB] uppercase tracking-wider">
+      {/* RESPONSIVE MOBILE & TABLET VIEW (< 1024px) */}
+      <div className="lg:hidden px-4 sm:px-6 py-14 sm:py-20 max-w-5xl mx-auto space-y-16">
+        {/* Section 1: How It Works */}
+        <div className="space-y-8">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EEEAFE] text-[#5B4BDB] text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
               Seamless 4-Step Process
-            </span>
-            <h2 className="text-2xl font-bold text-[#171B2D]">
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#171B2D] tracking-tight">
               How GRANTLY Simplifies Your Scholarship Journey
             </h2>
-            <p className="text-xs text-[#72788A]">
+            <p className="text-xs sm:text-sm text-[#72788A] max-w-lg mx-auto">
               Your scholarship journey, simplified into four effortless steps.
             </p>
           </div>
 
-          <div className="space-y-3.5">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-1.5">
-              <span className="text-xs font-mono font-bold text-[#5B4BDB]">01</span>
-              <h3 className="font-bold text-[#171B2D]">Create Your Profile</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Add your education level, academic marks, family income and location to build your student profile.
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-xl bg-[#EEEAFE] text-[#5B4BDB] flex items-center justify-center">
+                  <UserRound className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-mono font-bold text-[#5B4BDB] bg-[#EEEAFE] px-2.5 py-1 rounded-lg">
+                  01
+                </span>
+              </div>
+              <h3 className="font-bold text-[#171B2D] text-base sm:text-lg">Create Your Profile</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                Add your education level, academic marks, family income and location to build your student profile in minutes.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-1.5">
-              <span className="text-xs font-mono font-bold text-teal-600">02</span>
-              <h3 className="font-bold text-[#171B2D]">Discover Scholarships</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Explore curated opportunities with filters for merit, financial need, education level and scholarship categories.
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+                  <Compass className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-mono font-bold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-lg">
+                  02
+                </span>
+              </div>
+              <h3 className="font-bold text-[#171B2D] text-base sm:text-lg">Discover Scholarships</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                Explore curated opportunities with live filters for merit, financial need, education level and scholarship categories.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-1.5">
-              <span className="text-xs font-mono font-bold text-purple-600">03</span>
-              <h3 className="font-bold text-[#171B2D]">Check Your Eligibility</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Understand your eligibility by comparing your student profile against scholarship requirements.
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-mono font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">
+                  03
+                </span>
+              </div>
+              <h3 className="font-bold text-[#171B2D] text-base sm:text-lg">Check Your Eligibility</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                Understand your eligibility clearly by comparing your student profile against scholarship requirements.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-1.5">
-              <span className="text-xs font-mono font-bold text-emerald-600">04</span>
-              <h3 className="font-bold text-[#171B2D]">Track Your Applications</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Monitor deadlines, manage documents and track every application in one place.
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <ChartNoAxesCombined className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                  04
+                </span>
+              </div>
+              <h3 className="font-bold text-[#171B2D] text-base sm:text-lg">Track Your Applications</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                Monitor deadlines, manage documents and track every application in one place with a 7-stage pipeline.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Mobile Section 2: Featured Scholarships */}
-        <div className="space-y-5 pt-6 border-t border-slate-200">
-          <div className="text-center space-y-1.5">
-            <span className="text-xs font-bold text-teal-600 uppercase tracking-wider">
+        {/* Section 2: Featured Scholarships */}
+        <div className="space-y-8 pt-6 border-t border-slate-200">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 text-teal-700 text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
               Curated Opportunities
-            </span>
-            <h2 className="text-2xl font-bold text-[#171B2D]">
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#171B2D] tracking-tight">
               Featured Indian Scholarships
             </h2>
-            <p className="text-xs text-[#72788A]">
+            <p className="text-xs sm:text-sm text-[#72788A] max-w-lg mx-auto">
               Discover verified opportunities curated for your academic journey.
             </p>
           </div>
 
-          <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   Reliance Foundation
                 </span>
-                <h3 className="text-base font-bold text-[#171B2D] leading-snug">
+                <h3 className="text-base sm:text-lg font-bold text-[#171B2D] leading-snug">
                   Reliance Foundation UG Scholarship
                 </h3>
-                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 line-clamp-2">
                   Merit-cum-means financial grant with holistic mentorship for ambitious first-year undergraduate students.
                 </p>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
-                <span className="font-bold text-[#5B4BDB] text-sm">Up to ₹2,00,000</span>
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs">
+                <div>
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block">Award</span>
+                  <span className="font-bold text-[#5B4BDB] text-sm sm:text-base">Up to ₹2,00,000</span>
+                </div>
                 <Link
                   href="/scholarships/reliance-foundation-ug-2026"
-                  className="font-bold text-[#5B4BDB] inline-flex items-center gap-1"
+                  className="font-bold text-[#5B4BDB] inline-flex items-center gap-1 hover:text-[#4838C2]"
                 >
                   <span>View Details</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -1110,23 +1067,26 @@ export default function ConnectedCardExperience() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-3">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   AICTE • Ministry of Education
                 </span>
-                <h3 className="text-base font-bold text-[#171B2D] leading-snug">
+                <h3 className="text-base sm:text-lg font-bold text-[#171B2D] leading-snug">
                   AICTE Pragati Scholarship for Girls
                 </h3>
-                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 line-clamp-2">
                   Government scholarship supporting meritorious girl students pursuing recognized technical degree courses.
                 </p>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
-                <span className="font-bold text-[#5B4BDB] text-sm">₹50,000 / yr</span>
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs">
+                <div>
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block">Award</span>
+                  <span className="font-bold text-[#5B4BDB] text-sm sm:text-base">₹50,000 / yr</span>
+                </div>
                 <Link
                   href="/scholarships/aicte-pragati-girls-2026"
-                  className="font-bold text-[#5B4BDB] inline-flex items-center gap-1"
+                  className="font-bold text-[#5B4BDB] inline-flex items-center gap-1 hover:text-[#4838C2]"
                 >
                   <span>View Details</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -1134,23 +1094,26 @@ export default function ConnectedCardExperience() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-3">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   HDFC Bank Parivartan
                 </span>
-                <h3 className="text-base font-bold text-[#171B2D] leading-snug">
+                <h3 className="text-base sm:text-lg font-bold text-[#171B2D] leading-snug">
                   HDFC Badhte Kadam Scholarship
                 </h3>
-                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 line-clamp-2">
                   Financial assistance for high-performing students from underprivileged backgrounds pursuing higher education.
                 </p>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
-                <span className="font-bold text-[#5B4BDB] text-sm">Up to ₹1,00,000</span>
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs">
+                <div>
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block">Award</span>
+                  <span className="font-bold text-[#5B4BDB] text-sm sm:text-base">Up to ₹1,00,000</span>
+                </div>
                 <Link
                   href="/scholarships/hdfc-badhte-kadam-2026"
-                  className="font-bold text-[#5B4BDB] inline-flex items-center gap-1"
+                  className="font-bold text-[#5B4BDB] inline-flex items-center gap-1 hover:text-[#4838C2]"
                 >
                   <span>View Details</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -1158,29 +1121,42 @@ export default function ConnectedCardExperience() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-3">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   Infosys Foundation
                 </span>
-                <h3 className="text-base font-bold text-[#171B2D] leading-snug">
+                <h3 className="text-base sm:text-lg font-bold text-[#171B2D] leading-snug">
                   Infosys STEM Stars Scholarship
                 </h3>
-                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 line-clamp-2">
                   Annual financial aid and industry mentorship for female students admitted to premier STEM institutes.
                 </p>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
-                <span className="font-bold text-[#5B4BDB] text-sm">₹1,00,000 / yr</span>
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs">
+                <div>
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block">Award</span>
+                  <span className="font-bold text-[#5B4BDB] text-sm sm:text-base">₹1,00,000 / yr</span>
+                </div>
                 <Link
                   href="/scholarships/infosys-stem-stars-2026"
-                  className="font-bold text-[#5B4BDB] inline-flex items-center gap-1"
+                  className="font-bold text-[#5B4BDB] inline-flex items-center gap-1 hover:text-[#4838C2]"
                 >
                   <span>View Details</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
+          </div>
+
+          <div className="text-center pt-4">
+            <Link
+              href="/scholarships"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#5B4BDB] text-white text-sm font-bold shadow-lg shadow-[#5B4BDB]/25 hover:bg-[#4838C2] transition"
+            >
+              <span>Explore All 18+ Schemes</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </div>

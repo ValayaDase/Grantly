@@ -1,6 +1,8 @@
 # GRANTLY — Unified Scholarship Discovery & Management Platform
 
 > **A modern, fintech-grade EdTech SaaS platform designed to transform scholarship discovery, deterministic eligibility evaluation, application tracking, and document management for Indian students.**
+>
+> 🌐 **Live Demo:** [[Visit GRANTLY](https://your-live-link.vercel.app)](https://grantly-platform.vercel.app)
 
 [![Next.js 16](https://img.shields.io/badge/Next.js-16.4.5-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19.3.0-blue?style=flat&logo=react)](https://react.dev/)

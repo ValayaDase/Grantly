@@ -18,8 +18,29 @@ import {
   INITIAL_SAVED_IDS,
 } from '@/data/mockStudent';
 import { getDeadlineInfo } from '@/lib/deadline';
+import { evaluateScholarshipEligibility } from '@/lib/eligibility';
+import { calculateApplicationReadiness } from '@/lib/readiness';
 
 const STORAGE_KEY_PREFIX = 'grantly_v1_';
+
+function readStoredValue<T>(key: string, fallback: T): T {
+  try {
+    const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}${key}`);
+    if (stored === null) return fallback;
+    const value: unknown = JSON.parse(stored);
+    if (Array.isArray(fallback)) return (Array.isArray(value) ? value : fallback) as T;
+    if (fallback !== null && typeof fallback === 'object') {
+      return value !== null && typeof value === 'object' ? value as T : fallback;
+    }
+    return value as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function currentDateOnly(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 const DEFAULT_FILTERS: FilterState = {
   searchQuery: '',
@@ -72,6 +93,10 @@ interface AppContextType {
   updateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void;
   resetFilters: () => void;
 
+  // Theme state
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+
   // Dynamic Metrics
   stats: {
     profileCompletion: number;
@@ -88,84 +113,67 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  // Lazy initializers avoiding cascading render effects
-  const [profile, setProfile] = useState<StudentProfile | null>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}profile`);
-        return stored ? JSON.parse(stored) : DEMO_STUDENT_PROFILE;
-      } catch {
-        return DEMO_STUDENT_PROFILE;
-      }
-    }
-    return DEMO_STUDENT_PROFILE;
-  });
-
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}auth`);
-        return stored !== null ? stored === 'true' : true;
-      } catch {
-        return true;
-      }
-    }
-    return true;
-  });
-
-  const [savedScholarshipIds, setSavedScholarshipIds] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}saved`);
-        return stored ? JSON.parse(stored) : INITIAL_SAVED_IDS;
-      } catch {
-        return INITIAL_SAVED_IDS;
-      }
-    }
-    return INITIAL_SAVED_IDS;
-  });
-
-  const [applications, setApplications] = useState<Application[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}apps`);
-        return stored ? JSON.parse(stored) : INITIAL_APPLICATIONS;
-      } catch {
-        return INITIAL_APPLICATIONS;
-      }
-    }
-    return INITIAL_APPLICATIONS;
-  });
-
-  const [documents, setDocuments] = useState<DocumentItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}docs`);
-        return stored ? JSON.parse(stored) : INITIAL_DOCUMENTS;
-      } catch {
-        return INITIAL_DOCUMENTS;
-      }
-    }
-    return INITIAL_DOCUMENTS;
-  });
-
-  const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}notifs`);
-        return stored ? JSON.parse(stored) : INITIAL_NOTIFICATIONS;
-      } catch {
-        return INITIAL_NOTIFICATIONS;
-      }
-    }
-    return INITIAL_NOTIFICATIONS;
-  });
+  // Keep server and first-client renders identical, then restore browser state.
+  const [profile, setProfile] = useState<StudentProfile | null>(DEMO_STUDENT_PROFILE);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [savedScholarshipIds, setSavedScholarshipIds] = useState<string[]>(INITIAL_SAVED_IDS);
+  const [applications, setApplications] = useState<Application[]>(INITIAL_APPLICATIONS);
+  const [documents, setDocuments] = useState<DocumentItem[]>(INITIAL_DOCUMENTS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+  const [hasHydrated, setHasHydrated] = useState(false);
 
   const [comparisonIds, setComparisonIds] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  // Sync state changes to LocalStorage
   useEffect(() => {
+    try {
+      const storedTheme = localStorage.getItem('grantly-theme') as 'light' | 'dark' | null;
+      const activeTheme = storedTheme ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTheme(activeTheme);
+      if (activeTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch {
+      // Local storage fallback
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme((prev) => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      try {
+        localStorage.setItem('grantly-theme', next);
+        if (next === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch {
+        // Local storage fallback
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setProfile(readStoredValue('profile', DEMO_STUDENT_PROFILE));
+    const storedAuth = localStorage.getItem(`${STORAGE_KEY_PREFIX}auth`);
+    setIsLoggedIn(storedAuth === null || storedAuth === 'true');
+    setSavedScholarshipIds(readStoredValue('saved', INITIAL_SAVED_IDS));
+    setApplications(readStoredValue('apps', INITIAL_APPLICATIONS));
+    setDocuments(readStoredValue('docs', INITIAL_DOCUMENTS));
+    setNotifications(readStoredValue('notifs', INITIAL_NOTIFICATIONS));
+    setHasHydrated(true);
+  }, []);
+
+  // Sync state changes only after persisted values have been restored.
+  useEffect(() => {
+    if (!hasHydrated) return;
     try {
       if (profile) {
         localStorage.setItem(`${STORAGE_KEY_PREFIX}profile`, JSON.stringify(profile));
@@ -180,7 +188,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.error('Failed to sync to LocalStorage', e);
     }
-  }, [profile, isLoggedIn, savedScholarshipIds, applications, documents, notifications]);
+  }, [hasHydrated, profile, isLoggedIn, savedScholarshipIds, applications, documents, notifications]);
 
   // Notifications
   const addNotification = useCallback((notif: Omit<NotificationItem, 'id' | 'timestamp' | 'read'>) => {
@@ -201,7 +209,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ...(prev || DEMO_STUDENT_PROFILE),
         ...updates,
         onboardingCompleted: true,
-        updatedAt: '2026-11-07T12:00:00Z',
+        updatedAt: new Date().toISOString(),
       };
       return updated;
     });
@@ -264,29 +272,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           applicationRefNumber: appData.applicationRefNumber ?? updated[existingIndex].applicationRefNumber,
           appliedDate:
             newStatus === 'Applied' && !updated[existingIndex].appliedDate
-              ? '2026-11-07'
+              ? currentDateOnly()
               : updated[existingIndex].appliedDate,
-          updatedDate: '2026-11-07',
+          updatedDate: currentDateOnly(),
         };
         return updated;
       } else {
         const randomId = Math.random().toString(36).substring(2, 7);
+        const eligibility = evaluateScholarshipEligibility(scholarship, profile);
+        const readiness = calculateApplicationReadiness(scholarship, profile, documents);
         const newApp: Application = {
           id: `app-${randomId}`,
           scholarshipId: scholarship.id,
           scholarship,
           status: newStatus,
-          appliedDate: newStatus === 'Applied' ? '2026-11-07' : undefined,
+          appliedDate: newStatus === 'Applied' ? currentDateOnly() : undefined,
           submissionDeadline: scholarship.deadline,
-          updatedDate: '2026-11-07',
+          updatedDate: currentDateOnly(),
           notes: appData.notes || 'Added to your application pipeline.',
           applicationRefNumber: appData.applicationRefNumber,
           portalUrl: scholarship.officialLink,
           checklist: [
-            { id: '1', label: 'Eligibility requirements confirmed', completed: true },
-            { id: '2', label: 'Documents gathered from vault', completed: false },
+            { id: '1', label: 'Recorded eligibility criteria reviewed', completed: eligibility.status === 'ELIGIBLE' },
+            { id: '2', label: readiness.missingDocuments.length === 0 ? 'Required document records available' : 'Gather required document records', completed: readiness.missingDocuments.length === 0 },
             { id: '3', label: 'Submit form on official portal', completed: newStatus === 'Applied' },
-            { id: '4', label: 'Nodal verification & tracking', completed: false },
+            { id: '4', label: 'Update this tracker when the provider responds', completed: false },
           ],
         };
         return [newApp, ...prev];
@@ -300,7 +310,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       link: '/applications',
       scholarshipId: scholarship.id,
     });
-  }, [addNotification]);
+  }, [addNotification, profile, documents]);
 
   const updateApplicationStatus = useCallback((applicationId: string, status: Application['status']) => {
     setApplications((prev) =>
@@ -309,8 +319,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           return {
             ...app,
             status,
-            appliedDate: status === 'Applied' && !app.appliedDate ? '2026-11-07' : app.appliedDate,
-            updatedDate: '2026-11-07',
+            appliedDate: status === 'Applied' && !app.appliedDate ? currentDateOnly() : app.appliedDate,
+            updatedDate: currentDateOnly(),
           };
         }
         return app;
@@ -355,8 +365,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const newDoc: DocumentItem = {
       ...docData,
       id: `doc-${randomSuffix}`,
-      uploadedAt: '2026-11-07T12:00:00Z',
-      verified: true,
+      uploadedAt: new Date().toISOString(),
+      verified: false,
     };
     setDocuments((prev) => [newDoc, ...prev]);
 
@@ -405,7 +415,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setComparisonIds([]);
     setFilters(DEFAULT_FILTERS);
 
-    localStorage.clear();
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith(STORAGE_KEY_PREFIX))
+      .forEach((key) => localStorage.removeItem(key));
     localStorage.setItem(`${STORAGE_KEY_PREFIX}profile`, JSON.stringify(DEMO_STUDENT_PROFILE));
     localStorage.setItem(`${STORAGE_KEY_PREFIX}auth`, 'true');
     localStorage.setItem(`${STORAGE_KEY_PREFIX}saved`, JSON.stringify(INITIAL_SAVED_IDS));
@@ -497,6 +509,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setFilters,
         updateFilter,
         resetFilters,
+        theme,
+        toggleTheme,
         stats,
       }}
     >

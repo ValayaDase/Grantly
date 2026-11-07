@@ -196,6 +196,7 @@ export function ScholarshipFilters({ totalResults }: ScholarshipFiltersProps) {
         </div>
         <input
           type="range"
+          aria-label="Minimum scholarship award amount"
           min={0}
           max={200000}
           step={10000}

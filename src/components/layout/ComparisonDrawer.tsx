@@ -60,6 +60,7 @@ export function ComparisonDrawer() {
                     onClick={() => toggleComparison(s.id)}
                     className="hover:text-rose-400 text-slate-400 ml-1"
                     title="Remove"
+                    aria-label={`Remove ${s.title} from comparison`}
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -79,6 +80,7 @@ export function ComparisonDrawer() {
               onClick={clearComparison}
               className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
               title="Clear comparison list"
+              aria-label="Clear all compared scholarships"
             >
               <X className="w-4 h-4" />
             </button>
@@ -132,13 +134,14 @@ export function ComparisonDrawer() {
                   return (
                     <td key={s.id} className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-extrabold text-[#18B6A4]">{match.totalScore}%</span>
-                        <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-[#18B6A4] rounded-full"
-                            style={{ width: `${match.totalScore}%` }}
-                          />
-                        </div>
+                        <span className="text-sm font-extrabold text-[#18B6A4]">
+                          {profile?.onboardingCompleted ? `${match.totalScore}%` : 'Set up profile'}
+                        </span>
+                        {profile?.onboardingCompleted && (
+                          <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#18B6A4] rounded-full" style={{ width: `${match.totalScore}%` }} />
+                          </div>
+                        )}
                       </div>
                     </td>
                   );

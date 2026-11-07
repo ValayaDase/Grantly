@@ -1,4 +1,14 @@
-import { MatchScoreBreakdown, Scholarship, StudentProfile } from '@/types';
+import type { MatchScoreBreakdown, Scholarship, StudentProfile } from '@/types';
+import { evaluateScholarshipEligibility } from './eligibility';
+
+const EMPTY_BREAKDOWN: Omit<MatchScoreBreakdown, 'reasons'> = {
+  totalScore: 0,
+  educationMatch: 0,
+  academicScoreMatch: 0,
+  financialNeedMatch: 0,
+  categoryGenderMatch: 0,
+  stateLocationMatch: 0,
+};
 
 export function calculateMatchScore(
   scholarship: Scholarship,
@@ -6,120 +16,99 @@ export function calculateMatchScore(
 ): MatchScoreBreakdown {
   if (!profile || !profile.onboardingCompleted) {
     return {
-      totalScore: 50, // default baseline
-      educationMatch: 10,
-      academicScoreMatch: 10,
-      financialNeedMatch: 15,
-      categoryGenderMatch: 10,
-      stateLocationMatch: 5,
-      reasons: ['Complete your profile to unlock an accurate AI Match Score calculation.'],
+      ...EMPTY_BREAKDOWN,
+      reasons: ['Complete your profile to calculate a meaningful match score.'],
     };
   }
 
-  let educationMatch = 0;
-  let academicScoreMatch = 0;
-  let financialNeedMatch = 0;
-  let categoryGenderMatch = 0;
-  let stateLocationMatch = 0;
+  const criteria = scholarship.eligibilityCriteria;
   const reasons: string[] = [];
 
-  const criteria = scholarship.eligibilityCriteria;
+  const educationMatch = !criteria.educationLevels?.length || criteria.educationLevels.includes(profile.educationLevel)
+    ? 20
+    : 0;
+  reasons.push(educationMatch > 0
+    ? criteria.educationLevels?.length ? `Education level matches (${profile.educationLevel}).` : 'No education-level restriction is recorded.'
+    : `Education level does not match (${profile.educationLevel}).`);
 
-  // 1. Education Match (max 20 pts)
-  if (!criteria.educationLevels || criteria.educationLevels.length === 0) {
-    educationMatch = 20;
-    reasons.push('Open to all educational tiers (+20 pts)');
-  } else if (criteria.educationLevels.includes(profile.educationLevel)) {
-    educationMatch = 20;
-    reasons.push(`Direct level match for ${profile.educationLevel} (+20 pts)`);
-  } else {
-    educationMatch = 0;
-  }
-
-  // 2. Academic Score Match (max 25 pts)
-  if (criteria.minPercentage === undefined) {
-    academicScoreMatch = 20;
-    reasons.push('No minimum percentage threshold required (+20 pts)');
-  } else {
-    const studentScore = profile.percentageOrCgpa || 0;
-    if (studentScore >= criteria.minPercentage + 15) {
+  let academicScoreMatch = 20;
+  const academicScore = profile.percentageOrCgpa;
+  if (criteria.minPercentage !== undefined) {
+    if (!Number.isFinite(academicScore) || academicScore < 0 || academicScore > 100) {
+      academicScoreMatch = 0;
+      reasons.push('Add a valid academic percentage to assess this requirement.');
+    } else if (academicScore >= criteria.minPercentage + 15) {
       academicScoreMatch = 25;
-      reasons.push(`Your academic score of ${studentScore}% substantially exceeds the ${criteria.minPercentage}% benchmark (+25 pts)`);
-    } else if (studentScore >= criteria.minPercentage) {
+      reasons.push(`Academic score exceeds the ${criteria.minPercentage}% minimum.`);
+    } else if (academicScore >= criteria.minPercentage) {
       academicScoreMatch = 20;
-      reasons.push(`Your academic score (${studentScore}%) satisfies the ${criteria.minPercentage}% requirement (+20 pts)`);
-    } else if (studentScore >= criteria.minPercentage - 5) {
+      reasons.push(`Academic score meets the ${criteria.minPercentage}% minimum.`);
+    } else if (academicScore >= criteria.minPercentage - 5) {
       academicScoreMatch = 8;
-      reasons.push(`Score (${studentScore}%) is slightly below the ${criteria.minPercentage}% threshold (+8 pts)`);
+      reasons.push(`Academic score is slightly below the ${criteria.minPercentage}% minimum.`);
     } else {
       academicScoreMatch = 0;
+      reasons.push(`Academic score is below the ${criteria.minPercentage}% minimum.`);
     }
+  } else {
+    reasons.push('No minimum academic score is recorded.');
   }
 
-  // 3. Financial Need Match (max 25 pts)
-  if (criteria.maxIncome === undefined) {
-    financialNeedMatch = 20;
-    reasons.push('No income ceiling restrictions (+20 pts)');
-  } else {
-    const income = profile.annualFamilyIncome || 0;
-    if (income <= criteria.maxIncome * 0.5) {
+  let financialNeedMatch = 20;
+  const income = profile.annualFamilyIncome;
+  if (criteria.maxIncome !== undefined) {
+    if (!Number.isFinite(income) || income < 0) {
+      financialNeedMatch = 0;
+      reasons.push('Add a valid annual household income to assess this requirement.');
+    } else if (income <= criteria.maxIncome * 0.5) {
       financialNeedMatch = 25;
-      reasons.push('Family income places you in highest priority income bracket (+25 pts)');
+      reasons.push('Annual household income is within the lower half of the recorded income ceiling.');
     } else if (income <= criteria.maxIncome) {
       financialNeedMatch = 20;
-      reasons.push('Family income satisfies eligibility ceiling (+20 pts)');
+      reasons.push('Annual household income is within the recorded ceiling.');
     } else {
       financialNeedMatch = 0;
+      reasons.push('Annual household income exceeds the recorded ceiling.');
     }
-  }
-
-  // 4. Category & Gender Match (max 15 pts)
-  let catScore = 7.5;
-  let genderScore = 7.5;
-
-  if (criteria.gender && criteria.gender !== 'Any') {
-    if (profile.gender === criteria.gender) {
-      genderScore = 7.5;
-      reasons.push(`Matches specified ${criteria.gender} target group (+7.5 pts)`);
-    } else {
-      genderScore = 0;
-    }
-  }
-
-  if (criteria.categories && criteria.categories.length > 0 && !criteria.categories.includes('General')) {
-    if (criteria.categories.includes(profile.category)) {
-      catScore = 7.5;
-      reasons.push(`Category (${profile.category}) directly supported (+7.5 pts)`);
-    } else {
-      catScore = 0;
-    }
-  }
-
-  categoryGenderMatch = Math.round(catScore + genderScore);
-
-  // 5. State / Location Match (max 15 pts)
-  if (!criteria.states || criteria.states.includes('All India')) {
-    stateLocationMatch = 15;
-    reasons.push('Pan-India eligibility applies (+15 pts)');
-  } else if (criteria.states.includes(profile.state)) {
-    stateLocationMatch = 15;
-    reasons.push(`Resident of eligible state (${profile.state}) (+15 pts)`);
   } else {
-    stateLocationMatch = 0;
+    reasons.push('No income ceiling is recorded.');
   }
 
-  // Category preferences bonus check
-  if (profile.preferredScholarshipCategories && profile.preferredScholarshipCategories.includes(scholarship.category)) {
-    reasons.push(`Matches your preference for ${scholarship.category} opportunities`);
+  const categoryRestricted = Boolean(criteria.categories?.length);
+  const categoryMatch = !categoryRestricted || criteria.categories!.includes(profile.category);
+  const genderRestricted = Boolean(criteria.gender && criteria.gender !== 'Any');
+  const genderMatch = !genderRestricted || profile.gender === criteria.gender;
+  const categoryGenderMatch = Math.round((categoryMatch ? 7.5 : 0) + (genderMatch ? 7.5 : 0));
+  if (categoryRestricted) reasons.push(categoryMatch
+    ? `Social category matches (${profile.category}).`
+    : `Social category does not match the recorded categories (${profile.category}).`);
+  if (genderRestricted) reasons.push(genderMatch
+    ? `Gender matches the recorded ${criteria.gender} requirement.`
+    : `Gender does not match the recorded ${criteria.gender} requirement.`);
+  if (!categoryRestricted && !genderRestricted) reasons.push('No category or gender restriction is recorded.');
+
+  const stateLocationMatch = !criteria.states?.length || criteria.states.includes('All India') || criteria.states.includes(profile.state)
+    ? 15
+    : 0;
+  reasons.push(stateLocationMatch > 0
+    ? criteria.states?.length ? 'Domicile is within the recorded geographic scope.' : 'No state restriction is recorded.'
+    : `Domicile does not match the recorded states (${profile.state}).`);
+
+  const rawScore = educationMatch + academicScoreMatch + financialNeedMatch + categoryGenderMatch + stateLocationMatch;
+  const eligibility = evaluateScholarshipEligibility(scholarship, profile);
+  const totalScore = eligibility.status === 'NOT_ELIGIBLE' ? Math.min(49, rawScore) : rawScore;
+  if (eligibility.status === 'NOT_ELIGIBLE') {
+    reasons.push('The match score is capped because at least one mandatory eligibility rule is not met.');
+  } else if (eligibility.status === 'POTENTIALLY_ELIGIBLE') {
+    reasons.push('Some mandatory eligibility details are missing; confirm them before relying on this score.');
   }
 
-  const totalScore = Math.min(
-    100,
-    Math.max(0, educationMatch + academicScoreMatch + financialNeedMatch + categoryGenderMatch + stateLocationMatch)
-  );
+  if (profile.preferredScholarshipCategories?.includes(scholarship.category)) {
+    reasons.push(`Matches your ${scholarship.category} preference.`);
+  }
 
   return {
-    totalScore,
+    totalScore: Math.max(0, Math.min(100, totalScore)),
     educationMatch,
     academicScoreMatch,
     financialNeedMatch,
@@ -128,4 +117,3 @@ export function calculateMatchScore(
     reasons,
   };
 }
-

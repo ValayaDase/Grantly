@@ -7,7 +7,7 @@ This document provides clear, reproducible, step-by-step instructions for instal
 ## 📋 Table of Contents
 
 - [1. System Prerequisites](#1-system-prerequisites)
-- [2. Verified Technology Stack](#2-verified-technology-stack)
+- [2. Technology Stack](#2-technology-stack)
 - [3. Detailed Dependencies Reference](#3-detailed-dependencies-reference)
 - [4. Step-by-Step Installation](#4-step-by-step-installation)
 - [5. Environment Variables Configuration](#5-environment-variables-configuration)
@@ -31,11 +31,11 @@ Before installing GRANTLY, ensure your development environment satisfies the fol
 | **Git** | `v2.30.0` | Latest | `git -v` |
 
 > [!NOTE]
-> GRANTLY has been verified on Node.js `v22.13.1` with npm `v10.9.2` running on Windows 11 with Turbopack acceleration.
+> This workspace's lint, type-check, and production build were run on 2026-11-07. Use the commands above to check versions in your environment.
 
 ---
 
-## 2. Verified Technology Stack
+## 2. Technology Stack
 
 GRANTLY is built on modern web foundations:
 
@@ -133,7 +133,7 @@ npm install
 
 ## 5. Environment Variables Configuration
 
-GRANTLY is architected as an **offline-first, zero-external-dependency client application**. 
+GRANTLY is a **browser-side prototype**; its local scholarship catalog and demo state do not require a database or configured API service.
 
 All scholarship datasets, rule engines, match algorithms, and persistence mechanisms run directly inside the browser using React Context and `LocalStorage`. Consequently, **no mandatory environment variables are required** to run GRANTLY in development or production.
 
@@ -159,9 +159,10 @@ NODE_ENV=development
 
 GRANTLY does **not require a running database server** (such as PostgreSQL, MySQL, or MongoDB) to function.
 
-- **Data Source**: 18 verified Indian scholarship programs are loaded in-memory from [`src/data/scholarships.ts`](file:///e:/grantly/src/data/scholarships.ts).
+- **Data Source**: 18 seeded scholarship records are loaded in-memory from [`src/data/scholarships.ts`](file:///e:/grantly/src/data/scholarships.ts). They are not a live or independently verified feed; confirm current details with providers.
 - **Client Persistence**: User profile, saved scholarships, document vault records, notifications, and application pipelines are managed via [`src/context/AppContext.tsx`](file:///e:/grantly/src/context/AppContext.tsx) and synchronized to the browser's `LocalStorage` using keys prefixed with `grantly_v1_`.
-- **Pre-Seeded Demo Student**: The platform automatically seeds a complete demo profile (**Priya Sharma**, B.Tech student at Pune Institute of Computer Technology) on first launch so all algorithms and views are immediately interactive.
+- **Pre-Seeded Demo Student**: The platform seeds a demo profile (**Priya Sharma**) on first launch. Login is simulated and does not provide production authentication or route authorization.
+- **Document Records**: The vault stores file metadata in browser storage; selected file contents are not retained by this prototype.
 
 > To learn more about data schemas and future SQL migration plans, see [`docs/database/DATABASE_DOCUMENTATION.md`](./database/DATABASE_DOCUMENTATION.md).
 

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Scholarship } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { evaluateScholarshipEligibility } from '@/lib/eligibility';
@@ -27,6 +28,7 @@ interface ScholarshipCardProps {
 }
 
 export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipCardProps) {
+  const router = useRouter();
   const {
     profile,
     isScholarshipSaved,
@@ -41,6 +43,22 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
   const eligibility = evaluateScholarshipEligibility(scholarship, profile);
   const match = calculateMatchScore(scholarship, profile);
   const deadline = getDeadlineInfo(scholarship.deadline);
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent card navigation when clicking interactive buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    router.push(`/scholarships/${scholarship.id}`);
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent) => {
+    if (e.target !== e.currentTarget) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      router.push(`/scholarships/${scholarship.id}`);
+    }
+  };
 
   // Status badge styling
   const renderEligibilityBadge = () => {
@@ -86,7 +104,13 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
 
   if (viewMode === 'list') {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition-all hover:border-[#5B4BDB]/40 card-hover-effect">
+      <div
+        role="article"
+        tabIndex={0}
+        onClick={handleCardClick}
+        onKeyDown={handleCardKeyDown}
+        className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition-all hover:border-[#5B4BDB]/40 card-hover-effect cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
+      >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -130,7 +154,11 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
 
             <div className="flex items-center gap-2">
               <button
-                onClick={() => toggleComparison(scholarship.id)}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleComparison(scholarship.id);
+                }}
                 className={`p-2 rounded-xl text-xs font-semibold border transition-all ${
                   isSelectedForCompare
                     ? 'bg-[#171B2D] text-white border-[#171B2D]'
@@ -142,7 +170,11 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
               </button>
 
               <button
-                onClick={() => toggleSaveScholarship(scholarship.id)}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSaveScholarship(scholarship.id);
+                }}
                 className={`p-2 rounded-xl text-xs font-semibold border transition-all ${
                   isSaved
                     ? 'bg-rose-50 text-rose-600 border-rose-200'
@@ -169,7 +201,13 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
 
   // Grid Card View
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-lg transition-all hover:border-[#5B4BDB]/40 flex flex-col justify-between card-hover-effect group">
+    <div
+      role="article"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-lg transition-all hover:border-[#5B4BDB]/40 flex flex-col justify-between card-hover-effect group cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
+    >
       <div>
         {/* Top Badges & Actions */}
         <div className="flex items-start justify-between gap-2 mb-3">
@@ -182,7 +220,11 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
 
           <div className="flex items-center gap-1">
             <button
-              onClick={() => toggleComparison(scholarship.id)}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleComparison(scholarship.id);
+              }}
               className={`p-1.5 rounded-lg text-xs transition-colors ${
                 isSelectedForCompare
                   ? 'bg-[#171B2D] text-white'
@@ -193,7 +235,11 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
               <Layers className="w-4 h-4" />
             </button>
             <button
-              onClick={() => toggleSaveScholarship(scholarship.id)}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSaveScholarship(scholarship.id);
+              }}
               className={`p-1.5 rounded-lg text-xs transition-colors ${
                 isSaved
                   ? 'text-rose-500 hover:bg-rose-50'
@@ -258,11 +304,11 @@ export function ScholarshipCard({ scholarship, viewMode = 'grid' }: ScholarshipC
           {/* Smart Match Pill */}
           <div className="text-right">
             <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">
-              AI Match
+              Profile match
             </span>
             <span className="text-xs font-black text-[#18B6A4] flex items-center gap-1 justify-end">
               <Sparkles className="w-3 h-3 text-[#18B6A4]" />
-              {match.totalScore}%
+              {profile?.onboardingCompleted ? `${match.totalScore}%` : 'Set up profile'}
             </span>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { ApplicationReadiness, DocumentItem, Scholarship, StudentProfile } from '@/types';
+import type { ApplicationReadiness, DocumentItem, Scholarship, StudentProfile } from '@/types';
 import { evaluateScholarshipEligibility } from './eligibility';
 
 export function calculateApplicationReadiness(
@@ -7,71 +7,55 @@ export function calculateApplicationReadiness(
   userDocuments: DocumentItem[]
 ): ApplicationReadiness {
   const checklistItems: ApplicationReadiness['checklistItems'] = [];
-  const requiredDocs = scholarship.requiredDocuments || [];
-  const uploadedDocTypes = new Set<string>(userDocuments.map((d) => d.documentType));
+  const requiredDocs = [...new Set(scholarship.requiredDocuments ?? [])];
+  const uploadedDocTypes = new Set<string>(userDocuments.map((document) => document.documentType));
+  const profileCompleted = Boolean(profile?.onboardingCompleted);
 
-  // 1. Profile Completion Check
-  const hasProfile = Boolean(profile && profile.onboardingCompleted);
   checklistItems.push({
-    label: hasProfile ? 'Student profile completed with academic & income details' : 'Complete student profile',
-    completed: hasProfile,
+    label: profileCompleted ? 'Student profile completed' : 'Complete student profile',
+    completed: profileCompleted,
     type: 'profile',
   });
 
-  // 2. Eligibility Evaluation Check
   const eligibility = evaluateScholarshipEligibility(scholarship, profile);
-  const isEligibleOrPotential = eligibility.status === 'ELIGIBLE' || eligibility.status === 'POTENTIALLY_ELIGIBLE';
+  const eligibilityPassed = eligibility.status === 'ELIGIBLE';
   checklistItems.push({
-    label:
-      eligibility.status === 'ELIGIBLE'
-        ? 'Eligibility verified: All mandatory conditions met'
-        : eligibility.status === 'POTENTIALLY_ELIGIBLE'
-        ? 'Potentially eligible (some profile fields need review)'
-        : 'Eligibility review: Mandatory criteria not satisfied',
-    completed: isEligibleOrPotential,
+    label: eligibility.status === 'ELIGIBLE'
+      ? 'Recorded mandatory eligibility criteria are satisfied'
+      : eligibility.status === 'POTENTIALLY_ELIGIBLE'
+        ? 'Complete missing details to confirm eligibility'
+        : eligibility.status === 'NOT_ELIGIBLE'
+          ? 'Review failed mandatory eligibility criteria'
+          : 'Complete your profile to assess eligibility',
+    completed: eligibilityPassed,
     type: 'eligibility',
   });
 
-  // 3. Document Vault Matching
   const missingDocuments: string[] = [];
   let uploadedCount = 0;
-
-  for (const docType of requiredDocs) {
-    const isUploaded = uploadedDocTypes.has(docType);
-    if (isUploaded) {
-      uploadedCount++;
-      checklistItems.push({
-        label: `${docType} uploaded in Document Vault`,
-        completed: true,
-        type: 'document',
-      });
-    } else {
-      missingDocuments.push(docType);
-      checklistItems.push({
-        label: `${docType} required (Missing in Document Vault)`,
-        completed: false,
-        type: 'document',
-      });
-    }
+  for (const documentType of requiredDocs) {
+    const uploaded = uploadedDocTypes.has(documentType);
+    if (uploaded) uploadedCount += 1;
+    else missingDocuments.push(documentType);
+    checklistItems.push({
+      label: uploaded ? `${documentType} recorded in Document Vault` : `Add ${documentType} to Document Vault`,
+      completed: uploaded,
+      type: 'document',
+    });
   }
 
-  // 4. Final Review
-  checklistItems.push({
-    label: 'Official application guidelines and deadlines reviewed',
-    completed: true,
-    type: 'review',
-  });
-
-  // Calculate score
-  const totalItems = checklistItems.length;
-  const completedItems = checklistItems.filter((i) => i.completed).length;
-  const score = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  // Score only concrete preparation items. Readiness itself requires every
+  // blocker to be cleared; a percentage alone must never imply eligibility.
+  const score = checklistItems.length
+    ? Math.round((checklistItems.filter((item) => item.completed).length / checklistItems.length) * 100)
+    : 0;
+  const isReadyToApply = profileCompleted && eligibilityPassed && missingDocuments.length === 0;
 
   return {
     scholarshipId: scholarship.id,
     score,
-    isReadyToApply: score >= 80,
-    profileCompleted: hasProfile,
+    isReadyToApply,
+    profileCompleted,
     documentsUploadedCount: uploadedCount,
     totalRequiredDocuments: requiredDocs.length,
     missingDocuments,

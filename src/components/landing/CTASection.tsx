@@ -16,27 +16,27 @@ export default function CTASection() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative space-y-6">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 text-emerald-400 text-xs font-bold border border-emerald-400/20 backdrop-blur-xs">
           <Sparkles className="w-3.5 h-3.5" />
-          100% Free For All Indian Students
+          Browser-based scholarship planning demo
         </div>
 
         <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-          Ready to Discover Scholarships You Are Actually Eligible For?
+          Ready to Explore Scholarships That May Fit Your Profile?
         </h2>
 
         <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-          Create your profile in 2 minutes, get your personalized match score, and take command of your academic funding today.
+          Create a profile to compare the sample scholarship records with your declared information.
         </p>
 
         {/* Value pills */}
         <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-300 pt-2">
           <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> No Hidden Application Charges
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Track preparation in one place
           </span>
           <span className="flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-teal-400" /> 100% Local Browser Privacy
+            <ShieldCheck className="w-4 h-4 text-teal-400" /> Demo records stay in this browser
           </span>
           <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-purple-400" /> Instant Match Scoring
+            <CheckCircle2 className="w-4 h-4 text-purple-400" /> Preliminary criteria checks
           </span>
         </div>
 

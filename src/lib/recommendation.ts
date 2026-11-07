@@ -1,4 +1,4 @@
-import { Scholarship, StudentProfile } from '@/types';
+import type { EligibilityStatus, Scholarship, StudentProfile } from '@/types';
 import { evaluateScholarshipEligibility } from './eligibility';
 import { calculateMatchScore } from './matchScore';
 import { getDeadlineInfo } from './deadline';
@@ -6,7 +6,7 @@ import { getDeadlineInfo } from './deadline';
 export interface RecommendedScholarship {
   scholarship: Scholarship;
   matchScore: number;
-  eligibilityStatus: string;
+  eligibilityStatus: EligibilityStatus;
   recommendationReason: string;
   badge: 'Best Match' | 'Closing Soon' | 'High Value' | 'Top Government' | 'Diversity Focus';
 }
@@ -16,18 +16,17 @@ export function getRecommendedScholarships(
   profile: StudentProfile | null,
   limit: number = 6
 ): RecommendedScholarship[] {
-  const scored = scholarships.map((scholarship) => {
+  const scored = scholarships.flatMap((scholarship) => {
     const match = calculateMatchScore(scholarship, profile);
     const eligibility = evaluateScholarshipEligibility(scholarship, profile);
     const deadline = getDeadlineInfo(scholarship.deadline);
 
-    // Composite ranking score
-    let rank = match.totalScore;
-    if (eligibility.status === 'ELIGIBLE') rank += 30;
-    if (eligibility.status === 'POTENTIALLY_ELIGIBLE') rank += 10;
-    if (eligibility.status === 'NOT_ELIGIBLE') rank -= 50;
-    if (deadline.isClosingSoon) rank += 15;
-    if (scholarship.amount >= 100000) rank += 10;
+    // Do not recommend an opportunity that fails a known mandatory criterion.
+    if (eligibility.status === 'NOT_ELIGIBLE') return [];
+
+    // Match fit drives ordering. Eligibility only breaks ties; deadline is
+    // the final tie-breaker so urgency and award size cannot masquerade as fit.
+    const rank = match.totalScore;
 
     // Pick badge
     let badge: RecommendedScholarship['badge'] = 'Best Match';
@@ -43,7 +42,11 @@ export function getRecommendedScholarships(
 
     // Generate clear explanation
     let recommendationReason = '';
-    if (match.reasons.length > 0) {
+    if (eligibility.status === 'PROFILE_INCOMPLETE') {
+      recommendationReason = 'Complete your profile to see personalized fit and eligibility details.';
+    } else if (eligibility.status === 'POTENTIALLY_ELIGIBLE') {
+      recommendationReason = eligibility.explanation;
+    } else if (match.reasons.length > 0) {
       recommendationReason = match.reasons.slice(0, 2).join(' • ');
     } else {
       recommendationReason = `High-tier opportunity offering ${scholarship.amountFormatted}.`;
@@ -56,11 +59,16 @@ export function getRecommendedScholarships(
       recommendationReason,
       badge,
       rank,
+      eligibleTieBreak: eligibility.status === 'ELIGIBLE' ? 1 : 0,
+      deadlineTieBreak: deadline.daysRemaining >= 0 ? -deadline.daysRemaining : Number.NEGATIVE_INFINITY,
     };
   });
 
-  // Sort descending by calculated rank
-  scored.sort((a, b) => b.rank - a.rank);
+  scored.sort((a, b) =>
+    b.rank - a.rank ||
+    b.eligibleTieBreak - a.eligibleTieBreak ||
+    b.deadlineTieBreak - a.deadlineTieBreak
+  );
 
   return scored.slice(0, limit);
 }

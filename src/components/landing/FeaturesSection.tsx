@@ -16,7 +16,7 @@ export default function FeaturesSection() {
       icon: Sparkles,
       title: 'Smart Match Score',
       description:
-        'Transparent 0-100% calculation factoring academic grades, financial tiers, and target diversity parameters so you focus only where you have high win-probabilities.',
+        'See how recorded education, marks, income, category, gender, and domicile criteria compare with your profile.',
       iconBg: 'bg-[#EEEAFE] text-[#5B4BDB]',
       tag: 'Algorithmic Ranking',
     },
@@ -40,7 +40,7 @@ export default function FeaturesSection() {
       icon: FolderLock,
       title: 'Document Vault & Readiness',
       description:
-        'Keep your Aadhaar, Tahsildar Income slips, and marksheets indexed locally. The readiness index immediately shows which scholarships you have 100% documents ready for.',
+        'Keep document records in your browser and see which required document types are still missing. Files themselves are not stored by this demo.',
       iconBg: 'bg-emerald-50 text-emerald-600',
       tag: 'Privacy Preserved',
     },
@@ -48,7 +48,7 @@ export default function FeaturesSection() {
       icon: ShieldCheck,
       title: 'Explainable Rule Engine',
       description:
-        'No opaque black-box AI scores. Every check breaks down exactly which condition passed, which failed, and what missing detail you need to verify.',
+        'Review which recorded criteria match, fail, or need profile details. Confirm current rules with each scholarship provider.',
       iconBg: 'bg-amber-50 text-amber-600',
       tag: 'Deterministic Logic',
     },

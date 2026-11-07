@@ -5,7 +5,7 @@ import { AppProvider } from '@/context/AppContext';
 export const metadata: Metadata = {
   title: 'GRANTLY — Unified Scholarship Discovery & Management Platform',
   description:
-    'Discover scholarships that match your ambitions. Smart eligibility checker, deadline intelligence, application tracker, and secure document vault for Indian students.',
+    'Explore scholarship records, review profile-based eligibility criteria, compare opportunities, and track application preparation in a browser-based demo.',
   keywords: [
     'scholarships',
     'Indian students',
@@ -26,6 +26,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased min-h-screen flex flex-col bg-[#F8F9FC] text-[#171B2D]">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#5B4BDB] focus:text-white focus:rounded-xl focus:shadow-lg focus:outline-none"
+        >
+          Skip to main content
+        </a>
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

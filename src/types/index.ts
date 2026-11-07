@@ -222,7 +222,7 @@ export interface FilterState {
   maxIncome: number;
   minAmount: number;
   gender: string;
-  sortBy: 'recommended' | 'deadline_soon' | 'highest_amount' | 'recently_added';
+  sortBy: 'recommended' | 'deadline_soon' | 'highest_amount' | 'title_asc';
   onlyEligible: boolean;
 }
 

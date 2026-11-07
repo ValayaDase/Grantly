@@ -29,16 +29,16 @@ This document provides a technical specification of the data architecture, entit
 
 ## 1. Data Architecture Overview
 
-GRANTLY is architected in its current phase as an **offline-first, zero-server-latency client application**:
+GRANTLY is currently a **browser-side prototype** with no database server or backend API:
 
-- **Scholarship Repository**: 18 verified Indian scholarship programs are loaded as an immutable, typed in-memory dataset in [`src/data/scholarships.ts`](file:///e:/grantly/src/data/scholarships.ts).
+- **Scholarship Repository**: 18 seeded scholarship records are loaded as a typed in-memory dataset in [`src/data/scholarships.ts`](file:///e:/grantly/src/data/scholarships.ts). Their currentness and provider accuracy are not independently verified by the application.
 - **User & Transactional State**: All dynamic student data—including profile declarations, 7-stage application tracking, uploaded document metadata, saved bookmarks, and notifications—is managed via React Context and persisted in the browser's `LocalStorage`.
-- **Zero Remote Database Exposure**: No external SQL or NoSQL database server is queried at runtime. This guarantees total student privacy (PII remains in the local sandbox) and instant (<1ms) state reads.
+- **Storage Boundary**: No external SQL or NoSQL database server is queried by the application. Browser `localStorage` is user-editable and is not an authentication boundary or a secure place for sensitive identity records.
 
 ```mermaid
 graph TD
     subgraph InMemory ["In-Memory Static Store"]
-        StaticData["SCHOLARSHIPS_DATA (18 Verified Schemes)\nImmutable Typesafe Array"]
+        StaticData["SCHOLARSHIPS_DATA (18 Seeded Sample Records)\nTyped In-Memory Array"]
         DemoProfile["DEMO_STUDENT_PROFILE\n(Priya Sharma Default Seed)"]
     end
 
@@ -74,14 +74,14 @@ All user state is keyed under the prefix `grantly_v1_` to avoid namespace collis
 | :--- | :--- | :--- | :--- |
 | `grantly_v1_profile` | `StudentProfile` | JSON string | `DEMO_STUDENT_PROFILE` (Priya Sharma) |
 | `grantly_v1_saved` | `string[]` | JSON string | `INITIAL_SAVED_IDS` (3 IDs) |
-| `grantly_v1_applications` | `Application[]` | JSON string | `INITIAL_APPLICATIONS` (4 records) |
-| `grantly_v1_documents` | `DocumentItem[]` | JSON string | `INITIAL_DOCUMENTS` (5 certificates) |
-| `grantly_v1_notifications` | `NotificationItem[]` | JSON string | `INITIAL_NOTIFICATIONS` (4 alerts) |
+| `grantly_v1_apps` | `Application[]` | JSON string | `INITIAL_APPLICATIONS` (demo records) |
+| `grantly_v1_docs` | `DocumentItem[]` | JSON string | `INITIAL_DOCUMENTS` (demo metadata records) |
+| `grantly_v1_notifs` | `NotificationItem[]` | JSON string | `INITIAL_NOTIFICATIONS` (demo alerts) |
 | `grantly_v1_auth` | `boolean` | Raw string (`"true"` / `"false"`) | `"true"` |
 
 ### Fault Tolerance & Hydration Guard
 
-To ensure resilient execution across private browsing windows and handle corrupt storage gracefully, state initializers in [`AppContext.tsx`](file:///e:/grantly/src/context/AppContext.tsx) utilize protected lazy initializers:
+To keep the server and first client render consistent, the provider renders demo defaults and restores browser storage in an effect. JSON parsing errors fall back to demo values; stored object shapes are not fully schema-validated:
 
 ```typescript
 const [profile, setProfile] = useState<StudentProfile | null>(() => {
@@ -196,7 +196,7 @@ erDiagram
 All entities are strictly defined in [`src/types/index.ts`](file:///e:/grantly/src/types/index.ts).
 
 ### 4.1 `StudentProfile`
-Represents the verified student credentials used by matching and eligibility engines.
+Represents student-declared profile details used by the preliminary match and eligibility engines. Values are not independently verified.
 
 | Field Name | Type | Nullable | Validation / Constraints | Description |
 | :--- | :--- | :--- | :--- | :--- |
@@ -252,7 +252,7 @@ Represents an official academic funding program.
 | `applicationProcedure` | `string[]` | No | Step-by-step instructions for applying. |
 | `importantDates` | `ImportantDate[]` | No | Array of timeline milestone events. |
 | `officialLink` | `string` | Yes | External application portal URL. |
-| `isVerifiedOfficial` | `boolean` | No | Trust verification checkmark. |
+| `isVerifiedOfficial` | `boolean` | No | Seed-data flag; the application does not independently validate this claim. |
 | `tags` | `string[]` | No | Search and classification tags. |
 | `featured` | `boolean` | Yes | Flag for hero / carousel placement. |
 | `applicantCount` | `number` | Yes | Illustrative competition volume metric. |
@@ -314,7 +314,7 @@ Represents a certificate or credential uploaded to the student's Document Vault.
 | `fileSize` | `string` | Human-readable size (e.g. `"850 KB"`). |
 | `fileType` | `string` | MIME type (e.g. `"application/pdf"`). |
 | `uploadedAt` | `string` | ISO upload timestamp. |
-| `verified` | `boolean` | Verification status indicator. |
+| `verified` | `boolean` | Verification state in the record. New document metadata records start as unverified; no certificate verification service exists. |
 | `notes` | `string` (Optional) | Issuing authority or expiry details. |
 
 ### 4.7 `NotificationItem`

@@ -10,6 +10,8 @@ import {
   Menu,
   Sparkles,
   ArrowRight,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 interface TopNavProps {
@@ -20,7 +22,7 @@ interface TopNavProps {
 
 export function TopNav({ onOpenMobileMenu, title, subtitle }: TopNavProps) {
   const router = useRouter();
-  const { notifications, markNotificationRead, markAllNotificationsRead, stats, profile } = useApp();
+  const { notifications, markNotificationRead, markAllNotificationsRead, stats, profile, theme, toggleTheme } = useApp();
   const [searchVal, setSearchVal] = useState('');
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
@@ -69,6 +71,7 @@ export function TopNav({ onOpenMobileMenu, title, subtitle }: TopNavProps) {
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
+            aria-label="Search scholarships"
             placeholder="Search scholarships, grants..."
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
@@ -84,6 +87,20 @@ export function TopNav({ onOpenMobileMenu, title, subtitle }: TopNavProps) {
           <Sparkles className="w-3.5 h-3.5" />
           <span>Discover</span>
         </Link>
+
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? (
+            <Sun className="w-5 h-5 text-amber-400" />
+          ) : (
+            <Moon className="w-5 h-5 text-slate-600" />
+          )}
+        </button>
 
         {/* Notifications Popover Button */}
         <div className="relative">
@@ -125,11 +142,11 @@ export function TopNav({ onOpenMobileMenu, title, subtitle }: TopNavProps) {
                   <div className="py-8 text-center text-xs text-slate-400">No notifications</div>
                 ) : (
                   notifications.slice(0, 5).map((n) => (
-                    <div
+                    <Link
+                      href={n.link || '/notifications'}
                       key={n.id}
                       onClick={() => {
                         markNotificationRead(n.id);
-                        if (n.link) router.push(n.link);
                         setShowNotifDropdown(false);
                       }}
                       className={`p-3.5 text-xs hover:bg-slate-50 cursor-pointer transition-colors ${
@@ -141,7 +158,7 @@ export function TopNav({ onOpenMobileMenu, title, subtitle }: TopNavProps) {
                         <span className="text-[10px] text-slate-400 shrink-0">{n.timestamp}</span>
                       </div>
                       <p className="text-slate-500 line-clamp-2 leading-relaxed">{n.message}</p>
-                    </div>
+                    </Link>
                   ))
                 )}
               </div>

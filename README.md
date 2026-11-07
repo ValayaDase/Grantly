@@ -1,6 +1,9 @@
 # GRANTLY — Unified Scholarship Discovery & Management Platform
 
-> **A modern, fintech-grade EdTech SaaS platform designed to transform scholarship discovery, deterministic eligibility evaluation, application tracking, and document management for Indian students.**
+> **A browser-side prototype for exploring scholarship records, reviewing preliminary profile-based eligibility, comparing options, and tracking application preparation.**
+
+> [!IMPORTANT]
+> GRANTLY currently uses 18 seeded scholarship records, a seeded demo student, and browser `localStorage`. The catalog is not a verified live feed; login is not secure authentication; application statuses are user-managed; and the Document Vault stores metadata only, not file contents. Confirm current rules and deadlines with each provider. This prototype is not a source of official eligibility decisions.
 
 [![Next.js 16](https://img.shields.io/badge/Next.js-16.4.5-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19.3.0-blue?style=flat&logo=react)](https://react.dev/)
@@ -42,33 +45,34 @@ Every academic year, Indian students forfeit hundreds of crores of rupees in gov
 4. **Lack of Lifecycle Tracking**: Once submitted, students have no structured way to manage portal reference numbers, track review stages, or contrast competing offers.
 
 ### The Solution: GRANTLY
-**GRANTLY** unites discovery, deterministic compliance checking, and application lifecycle tracking into a single digital workspace. Built with modern SaaS design principles, it delivers zero-latency static performance, strict data privacy, and explainable intelligence.
+**GRANTLY** brings scholarship discovery, preliminary criteria checks, comparison, and application preparation into one digital workspace. It is a client-side prototype: its demo data and user state are stored in the browser, and it does not submit applications or synchronize provider decisions.
 
 ---
 
 ## 2. Project Objectives
 
 - **Democratize Scholarship Access**: Provide a clean, unified discovery hub for school, undergraduate, postgraduate, and technical scholars across India.
-- **Eliminate Eligibility Ambiguity**: Replace generic percentage estimates with an explainable, deterministic rule engine that audits student qualifications with zero black-box obscurity.
+- **Make Recorded Criteria Easier to Understand**: Compare profile details against the scholarship criteria present in the local sample data and show missing or failed checks.
 - **Ensure Application Readiness**: Cross-reference required certificates directly against the student's Document Vault to prevent disqualification due to missing paperwork.
-- **Guarantee Student Privacy**: Protect sensitive financial declarations and documents through client-side local storage sandboxing without third-party data tracking.
+- **Keep the Prototype Simple**: Persist demo profile, tracker, and document metadata in browser storage. Do not use this prototype to store sensitive identity documents.
 - **Deliver World-Class User Experience**: Combine fintech design fidelity (`#5B4BDB` Purple, `#18B6A4` Teal, `#171B2D` Navy) with hardware-accelerated GSAP scroll storytelling.
 
 ---
 
 ## 3. Key Features
 
-### 🧠 1. Explainable Match Scoring Engine (0–100 Pts)
-- Computes compatibility across 5 weighted vectors:
+### 🧠 1. Explainable Profile Match (0–100 Pts)
+- Computes an indicative compatibility score across five dimensions:
   - **Academic Score Match** (25 pts): Marks vs minimum cutoff benchmark.
   - **Financial Need Match** (25 pts): Income tier and ceiling compliance.
   - **Education Level Match** (20 pts): Direct level alignment.
   - **Category & Gender Match** (15 pts): Affirmative action and women-in-STEM benefits.
   - **State Domicile Match** (15 pts): Home state vs All-India eligibility.
-- Accompanied by transparent, human-readable point attribution reasons.
+- Shows human-readable reasons. A failed mandatory eligibility rule caps the score; incomplete profiles do not receive a fabricated baseline score.
+- This is a deterministic heuristic, not AI and not a probability of receiving funding.
 
 ### 🛡️ 2. Deterministic Smart Eligibility Checker
-- Audits student profile credentials against declared mandatory criteria.
+- Compares the student profile against the criteria recorded in the local scholarship data.
 - Returns explicit compliance statuses: `ELIGIBLE`, `POTENTIALLY_ELIGIBLE`, `NOT_ELIGIBLE`, or `PROFILE_INCOMPLETE`.
 - Generates an itemized audit matrix showing declared values, required benchmarks, and remediation steps.
 
@@ -79,15 +83,14 @@ Every academic year, Indian students forfeit hundreds of crores of rupees in gov
 
 ### 🗄️ 4. Local Document Vault & Readiness Index
 - Indexes 9 standard Indian scholarship certificates (Aadhaar, Tahsildar Income, Caste, Domicile, Marksheets, Bonafide, Bank Passbook, Photograph, SOP).
-- Automatically calculates an **Application Readiness Index** (0–100%), signaling whether an application is 100% ready for submission.
+- Calculates a preparation checklist score. “Ready” requires a completed profile, a passing preliminary eligibility assessment, and all required document types recorded; it does not mean the provider has approved an application.
 
 ### ⚖️ 5. Side-by-Side Comparison Dock
 - Compare up to 3 scholarships simultaneously in a synchronized floating matrix.
 - Contrast benefits, deadlines, academic cutoffs, income limits, and document checklists.
 
 ### ⏳ 6. Dynamic Deadline Intelligence
-- Categorizes approaching deadlines into **Closing This Week** (<= 7 days, Red), **Due This Month** (<= 30 days, Amber), and **Open** (Blue/Green).
-- Dedicated in-app notification center alerts students to urgent deadlines.
+- Calculates deadline labels from the current India calendar date and recorded deadline. Data freshness depends on the seeded record; the app does not fetch provider updates or generate automatic deadline alerts.
 
 ### 🎨 7. Connected Physical Card Drop & Stacking Scroll Experience
 - Pinned GSAP ScrollTrigger sequence connecting "How It Works" to "Featured Indian Scholarships".
@@ -135,7 +138,7 @@ graph TD
 
     subgraph StaticAssets ["Static Build Outputs (Server / Edge CDN)"]
         StaticHTML["36 Pre-rendered Static Pages (/scholarships/[id])"]
-        Dataset["In-Memory Dataset (18 Verified Indian Schemes)"]
+        Dataset["In-Memory Dataset (18 Sample Scholarship Records)"]
     end
 
     UI <--> Context
@@ -163,7 +166,7 @@ graph TD
 > *The `/applications` Kanban board tracking student applications across Planning, Applied, Under Review, and Approved.*
 
 > 📷 **Screenshot Placeholder 5: Document Vault & Readiness Index**  
-> *The `/documents` vault showing uploaded Aadhaar, Income, and Marksheet certificates with 100% readiness verification.*
+> *The `/documents` vault showing locally stored sample document metadata and required-document coverage.*
 
 ---
 
@@ -207,7 +210,7 @@ GRANTLY/
 │   │   └── page.tsx                       # Landing page with GSAP animations
 │   │
 │   ├── components/                        # Modular React Components
-│   │   ├── common/                        # Badge, Modal, ProgressBar, EmptyState, Logo
+│   │   ├── common/                        # Badge, Modal, EmptyState, Logo
 │   │   ├── dashboard/                     # AnalyticsChart (Recharts visualization)
 │   │   ├── landing/                       # HeroSection, ConnectedCardExperience, CTA
 │   │   ├── layout/                        # Navbar, Footer, Sidebar, TopNav, ComparisonDrawer
@@ -217,7 +220,7 @@ GRANTLY/
 │   │   └── AppContext.tsx                 # Centralized state & LocalStorage sync
 │   │
 │   ├── data/
-│   │   ├── scholarships.ts                # 18 realistic verified Indian scholarship schemes
+│   │   ├── scholarships.ts                # 18 seeded scholarship records
 │   │   └── mockStudent.ts                 # Priya Sharma sample student data & documents
 │   │
 │   ├── lib/                               # Pure Deterministic Algorithmic Engines
@@ -266,7 +269,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The applica
 
 ## 9. Environment Variables Configuration
 
-GRANTLY is an **offline-first, zero-external-API client application**. All scholarship datasets, matching algorithms, and storage mechanisms execute directly inside the browser.
+GRANTLY is a **browser-side prototype**. Scholarship records and matching logic are bundled with the app; mutable demo state is saved in `localStorage`. There is no backend API, secure authentication, live scholarship feed, or provider-side application sync.
 
 **No mandatory `.env` file is required.**
 
@@ -322,6 +325,9 @@ For in-depth technical details, please consult our dedicated documentation files
 - 📝 [**Software Requirements Specification (SRS)** (`docs/requirements/SRS.md`)](./docs/requirements/SRS.md)
 - 🗄️ [**Database & Data Architecture** (`docs/database/DATABASE_DOCUMENTATION.md`)](./docs/database/DATABASE_DOCUMENTATION.md)
 - 🎓 [**Student User Guide** (`docs/user-guide/USER_GUIDE.md`)](./docs/user-guide/USER_GUIDE.md)
+- 🧪 [**Unit Testing Suite Documentation** (`docs/TESTING_DOCUMENTATION.md`)](./docs/TESTING_DOCUMENTATION.md)
+- ♿ [**Accessibility & WCAG 2.1 Audit** (`docs/ACCESSIBILITY_AUDIT.md`)](./docs/ACCESSIBILITY_AUDIT.md)
+- 🏆 [**Final FAIE Evaluation Report** (`docs/FINAL_FAIE_EVALUATION.md`)](./docs/FINAL_FAIE_EVALUATION.md)
 
 ---
 

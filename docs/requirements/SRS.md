@@ -3,7 +3,7 @@
 **Project Name:** GRANTLY – Unified Scholarship Discovery & Management Platform  
 **Document Version:** 1.0.0  
 **Standard Compliance:** IEEE Std 830-1998 Inspired  
-**Status:** Baseline Specification (Phase 1 Frontend Prototype Verified)  
+**Status:** Prototype requirements and implementation map; browser workflows and security claims are not all independently verified.  
 
 ---
 
@@ -69,8 +69,8 @@ GRANTLY is a client-side unified scholarship discovery and management SaaS platf
 | **CSR** | Corporate Social Responsibility funding. |
 | **CGPA** | Cumulative Grade Point Average. |
 | **Match Score** | A weighted 0–100% heuristic indicating student-to-scholarship compatibility. |
-| **Eligibility Checker** | A deterministic rule evaluation engine returning verified compliance results. |
-| **Readiness Index** | The percentage of required certificates uploaded to the student's Document Vault. |
+| **Eligibility Checker** | A deterministic preliminary comparison of a profile with criteria present in a sample record. |
+| **Readiness Index** | A preparation checklist score covering profile completion, recorded eligibility, and required document metadata. |
 | **LocalStorage** | W3C Web Storage API persisting key-value pairs in the client's browser. |
 | **SSG** | Static Site Generation (pre-rendering HTML during compilation). |
 
@@ -79,7 +79,7 @@ GRANTLY is a client-side unified scholarship discovery and management SaaS platf
 ## 2. Overall Description
 
 ### 2.1 Product Perspective
-GRANTLY acts as an intelligent intermediary layer between students and disparate funding sources. Currently implemented as a modern Next.js 16 App Router application, it eliminates server latency by computing match scores, eligibility audits, and readiness checklists directly inside the browser client.
+GRANTLY is a Next.js 16 browser-side prototype for exploring seeded scholarship records and tracking preparation. It does not aggregate live sources, verify current provider rules, submit applications, or synchronize status with providers.
 
 ```mermaid
 graph LR
@@ -113,16 +113,16 @@ graph LR
 ### 2.4 Operating Environment
 - **Client Platforms**: Modern desktop, laptop, tablet, and mobile web browsers (Chrome 100+, Firefox 100+, Safari 15+, Edge 100+).
 - **Execution Runtime**: Node.js v18.18+ or v20+ with Turbopack for local development.
-- **Network Dependency**: Zero runtime network calls required for catalog browsing, rule checking, or document tracking.
+- **Network Dependency**: The catalog and calculations are bundled locally; this is not an audited claim that the complete deployed page makes no network requests.
 
 ### 2.5 Design and Implementation Constraints
 - **Zero Database Server Constraint**: In Phase 1, data persistence is maintained via browser `LocalStorage`.
-- **Pure Client State**: Sensitive certificates are tracked as metadata records without uploading raw binary data to public cloud servers.
+- **Demo Storage**: Document records store metadata only. Do not enter sensitive identity information into this prototype; localStorage is not secure storage.
 - **Framework Constraints**: Must run cleanly on Next.js 16 with React 19 in TypeScript Strict Mode.
 
 ### 2.6 Assumptions and Dependencies
 - Student users maintain modern web browsers with LocalStorage enabled.
-- Scholarship criteria declared in the system reflect official published guidelines for the 2026–27 academic cycle.
+- Seeded scholarship criteria and deadlines may be incomplete or stale and must be checked with providers.
 
 ---
 
@@ -160,7 +160,7 @@ Requirements are classified as:
 | Req ID | Requirement Statement | Status |
 | :--- | :--- | :--- |
 | **FR-13** | The system shall provide a curated repository of 18 realistic Indian scholarship schemes spanning Government, Corporate, and Trust providers. | `[Implemented]` |
-| **FR-14** | The system shall display scholarship cards featuring award value, provider name, deadline countdown, category tag, and official verified badge. | `[Implemented]` |
+| **FR-14** | The system shall display scholarship cards featuring award value, provider name, deadline countdown, and category tag. | `[Implemented; seeded data only]` |
 | **FR-15** | The system shall provide statically pre-rendered detail pages (`/scholarships/[id]`) for every scheme. | `[Implemented]` |
 | **FR-16** | The detail page shall present award coverage, eligibility rules, required documents list, application procedure, and official portal links. | `[Implemented]` |
 
@@ -177,7 +177,7 @@ Requirements are classified as:
 
 | Req ID | Requirement Statement | Status |
 | :--- | :--- | :--- |
-| **FR-21** | The system shall calculate a 0–100 point Match Score for every scholarship based on the student's profile. | `[Implemented]` |
+| **FR-21** | The system shall calculate an indicative 0–100 match heuristic when a complete profile is available; failed mandatory criteria cap the total. | `[Implemented]` |
 | **FR-22** | The match score shall be composed of: Education (max 20 pts), Academic Performance (max 25 pts), Financial Need (max 25 pts), Category & Gender (max 15 pts), and State Domicile (max 15 pts). | `[Implemented]` |
 | **FR-23** | The system shall display an explainable reasons list articulating the exact point contributions. | `[Implemented]` |
 
@@ -185,7 +185,7 @@ Requirements are classified as:
 
 | Req ID | Requirement Statement | Status |
 | :--- | :--- | :--- |
-| **FR-24** | The system shall evaluate mandatory scholarship criteria against student data without heuristic ambiguity. | `[Implemented]` |
+| **FR-24** | The system shall compare supported mandatory criteria in each record with student profile data and show missing, failed, or satisfied rules. | `[Implemented; criteria data may be incomplete]` |
 | **FR-25** | The engine shall output one of four overall statuses: `ELIGIBLE`, `POTENTIALLY_ELIGIBLE`, `NOT_ELIGIBLE`, or `PROFILE_INCOMPLETE`. | `[Implemented]` |
 | **FR-26** | The system shall generate an itemized rule evaluation table showing the criteria name, student value, required benchmark, and compliance status. | `[Implemented]` |
 | **FR-27** | The system shall provide actionable remediation recommendations when criteria fail or fields are missing. | `[Implemented]` |
@@ -220,17 +220,17 @@ Requirements are classified as:
 | Req ID | Requirement Statement | Status |
 | :--- | :--- | :--- |
 | **FR-38** | The system shall provide a local Document Vault supporting standard Indian certificate categories (Aadhaar, Income Certificate, Caste, Domicile, Marksheets, Bonafide, Bank Passbook, Photograph, SOP). | `[Implemented]` |
-| **FR-39** | The system shall simulate local file uploads with metadata capture (file name, file size, MIME type, upload timestamp). | `[Implemented]` |
-| **FR-40** | The system shall calculate an Application Readiness Score (0–100%) by cross-referencing scholarship required documents with uploaded documents. | `[Implemented]` |
+| **FR-39** | The system shall record selected file metadata (name, size, MIME type, timestamp) without retaining file contents. | `[Implemented]` |
+| **FR-40** | The system shall calculate a preparation checklist score from profile completion, preliminary eligibility, and required document metadata. | `[Implemented]` |
 | **FR-41** | The system shall display missing document alerts directly on scholarship detail cards. | `[Implemented]` |
 
 ### 3.11 Deadline Intelligence & Notification Center
 
 | Req ID | Requirement Statement | Status |
 | :--- | :--- | :--- |
-| **FR-42** | The system shall compute real-time countdown days remaining until scholarship submission gates close. | `[Implemented]` |
+| **FR-42** | The system shall compute calendar days remaining from the current India date and the deadline stored in the record. | `[Implemented; stored dates may be stale]` |
 | **FR-43** | The system shall visually flag high-urgency deadlines ("Closing This Week" for <= 7 days, "Due This Month" for <= 30 days). | `[Implemented]` |
-| **FR-44** | The system shall provide an in-app Notification Center (`/notifications`) alerting students to upcoming deadlines, status transitions, and document notices. | `[Implemented]` |
+| **FR-44** | The system shall provide an in-app notification list for notifications created by demo actions and seeded sample data. | `[Implemented; no automatic provider/deadline feed]` |
 | **FR-45** | The system shall support mark as read, mark all read, and unread count badges. | `[Implemented]` |
 
 ### 3.12 Interactive Dashboard & Analytics
@@ -258,7 +258,7 @@ Requirements are classified as:
 
 | Req ID | Requirement Statement | Verification Method |
 | :--- | :--- | :--- |
-| **NFR-05** | Sensitive student personal data, income records, and documents shall remain strictly in the browser sandbox. | Verified zero outbound network requests for PII. |
+| **NFR-05** | The prototype shall not implement a backend data service for student profile or document records. | Source review found localStorage persistence; no network-monitoring audit was performed. Do not store sensitive identity documents. |
 | **NFR-06** | All user inputs rendered in the DOM shall be escaped to prevent Cross-Site Scripting (XSS). | Standard React 19 JSX virtual DOM sanitization. |
 | **NFR-07** | Local storage serialization shall handle malformed JSON gracefully without throwing uncaught exceptions. | Safe JSON parse wrapper implemented in AppContext. |
 
@@ -267,7 +267,7 @@ Requirements are classified as:
 | Req ID | Requirement Statement | Benchmark / Metric |
 | :--- | :--- | :--- |
 | **NFR-08** | The system shall adhere to WCAG 2.1 AA color contrast ratios for all critical text and navigation controls. | Primary navy `#171B2D` (>14:1) and purple `#5B4BDB` (>5:1). |
-| **NFR-09** | The interface shall provide fully responsive layouts across mobile (<=640px), tablet (641-1023px), and desktop (>=1024px). | Responsive breakpoints verified across all views. |
+| **NFR-09** | The interface shall provide responsive layouts across mobile, tablet, and desktop. | Responsive CSS is present; all routes have not been manually viewport-tested. |
 | **NFR-10** | The system shall respect the user's `prefers-reduced-motion` operating system setting. | Animation loops disabled when reduced motion is detected. |
 
 ### 4.4 Reliability & Fault Tolerance

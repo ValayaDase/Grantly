@@ -146,7 +146,7 @@ export default function SettingsPage() {
             <div className="space-y-0.5">
               <strong className="font-bold block">Reset to Competition Demo State</strong>
               <span className="text-[11px] text-amber-800">
-                Restore the default demo student (Priya Sharma), initial saved schemes, sample applications, and verified documents.
+                Restore the default demo student (Priya Sharma), initial saved schemes, sample applications, and sample document records.
               </span>
             </div>
 

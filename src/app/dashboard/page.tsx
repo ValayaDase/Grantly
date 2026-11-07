@@ -3,6 +3,7 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useApp } from "@/context/AppContext";
 import { getRecommendedScholarships } from "@/lib/recommendation";
@@ -193,6 +194,7 @@ function QuickAction({
 // ---------------- MAIN DASHBOARD ----------------
 
 export default function DashboardPage() {
+  const router = useRouter();
   const {
     profile,
     allScholarships,
@@ -501,6 +503,7 @@ export default function DashboardPage() {
                 />
 
                 <input
+                  aria-label="Search recommended scholarships"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search recommended scholarships..."
@@ -536,7 +539,20 @@ export default function DashboardPage() {
                     }) => (
                       <article
                         key={scholarship.id}
-                        className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/40"
+                        role="article"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          if ((e.target as HTMLElement).closest("a, button")) return;
+                          router.push(`/scholarships/${scholarship.id}`);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.target !== e.currentTarget) return;
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            router.push(`/scholarships/${scholarship.id}`);
+                          }
+                        }}
+                        className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/40 cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-400"
                       >
 
                         <div className="space-y-4">
@@ -548,7 +564,7 @@ export default function DashboardPage() {
 
                             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
                               <Sparkles size={12} />
-                              {matchScore}% Match
+                              {profile?.onboardingCompleted ? `${matchScore}% Match` : 'Complete profile to personalize'}
                             </span>
                           </div>
 

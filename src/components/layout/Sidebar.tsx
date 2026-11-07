@@ -80,7 +80,7 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
   ];
 
   return (
-    <aside className="w-64 sm:w-72 h-screen flex flex-col justify-between bg-white border-r border-slate-200/80 shrink-0 select-none z-30">
+    <aside className="w-64 sm:w-72 h-dvh lg:sticky lg:top-0 lg:self-start flex flex-col justify-between bg-white border-r border-slate-200/80 shrink-0 select-none z-30">
       {/* Top Header */}
       <div>
         <div className="h-16 sm:h-20 flex items-center px-6 border-b border-slate-100">

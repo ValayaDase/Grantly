@@ -316,19 +316,19 @@ const eligibilityConfig = {
 
                   <div className="flex items-end gap-2 mt-2">
                     <span className="text-4xl font-black text-white">
-                      {match.totalScore}%
+                      {profile?.onboardingCompleted ? `${match.totalScore}%` : '—'}
                     </span>
                     <span className="text-xs font-bold text-teal-300 mb-1.5">
-                      Compatibility
+                      {profile?.onboardingCompleted ? 'Profile match' : 'Complete profile to calculate'}
                     </span>
                   </div>
 
-                  <div className="h-1.5 bg-white/15 rounded-full overflow-hidden mt-3">
+                  {profile?.onboardingCompleted && <div className="h-1.5 bg-white/15 rounded-full overflow-hidden mt-3">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-teal-300 to-emerald-400 transition-all duration-1000"
                       style={{ width: `${match.totalScore}%` }}
                     />
-                  </div>
+                  </div>}
                 </div>
               </div>
             </div>

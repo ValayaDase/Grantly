@@ -34,8 +34,8 @@ Indian students frequently forfeit millions of rupees in academic funding due to
 **GRANTLY** solves this through a unified digital workspace designed around five core principles:
 
 1. **Deterministic Transparency (Zero Black-Box Scoring)**: Rather than using opaque neural predictions, eligibility is evaluated through an explainable multi-condition rule engine that breaks down exactly which condition passed, failed, or requires attention.
-2. **Offline-First Data Privacy**: Sensitive student personal information, academic marks, and caste/income documents are stored and processed entirely in the student's browser sandbox, minimizing data exposure.
-3. **Zero-Latency Static Pre-rendering**: Every scholarship detail view (`/scholarships/[id]`) is pre-rendered at build time via Next.js 16 static site generation (`generateStaticParams`), ensuring instant load times and optimal SEO.
+2. **Browser-Side Prototype State**: Profile declarations and document metadata are persisted in `localStorage`. This is user-editable storage, not a secure account or suitable storage for identity documents.
+3. **Static Route Generation**: Scholarship detail routes are generated at build time from the local seed dataset; generation does not validate record accuracy or guarantee a particular load time.
 4. **Synchronized Reactive State**: A centralized React Context (`AppContext`) coordinates profile updates, bookmark toggles, application pipeline shifts, and document uploads with automatic `LocalStorage` serialization.
 5. **Modern SaaS Aesthetic**: An off-white fintech visual design (`#F8F9FC`), Deep Navy typography (`#171B2D`), Royal Purple primary highlights (`#5B4BDB`), Vibrant Teal progress indicators (`#18B6A4`), and GSAP scroll storytelling.
 
@@ -82,7 +82,7 @@ graph TD
     end
 
     subgraph StaticAssets ["Static Build Artifacts (Server / CDN)"]
-        Dataset["In-Memory Scholarship Dataset\n(18 Verified Indian Schemes)"]
+        Dataset["In-Memory Scholarship Dataset\n(18 Seeded Sample Records)"]
         DemoSeed["Priya Sharma Demo Profile\n(Sample Data Seed)"]
         StaticHTML["Pre-rendered HTML / Turbopack Chunks\n(36 Static Routes)"]
     end
@@ -174,7 +174,6 @@ graph TD
     subgraph CommonPrimitives ["Common UI Primitives"]
         Badge["Badge (src/components/common/Badge.tsx)"]
         Modal["Modal (src/components/common/Modal.tsx)"]
-        ProgressBar["ProgressBar (src/components/common/ProgressBar.tsx)"]
         EmptyState["EmptyState (src/components/common/EmptyState.tsx)"]
         Logo["Logo (src/components/common/Logo.tsx)"]
     end
@@ -196,44 +195,44 @@ All business logic is isolated in pure, deterministic TypeScript modules under `
 
 ### 5.1 Explainable Match Score Algorithm (100 Pts)
 
-Implemented in [`src/lib/matchScore.ts`](file:///e:/grantly/src/lib/matchScore.ts), this algorithm calculates a 0–100% compatibility rating based on five weighted dimensions:
+Implemented in [`src/lib/matchScore.ts`](file:///e:/grantly/src/lib/matchScore.ts), this deterministic heuristic calculates an indicative 0–100 compatibility rating from five dimensions. It is not an AI model or funding probability. A profile is required; missing profiles receive no baseline score, and a failed mandatory eligibility rule caps the total at 49.
 
 | Dimension | Max Points | Weight | Criteria Logic |
 | :--- | :--- | :--- | :--- |
 | **Education Level** | 20 pts | 20% | Direct level match (e.g. Undergraduate matches Undergraduate) or open to all. |
 | **Academic Performance** | 25 pts | 25% | Marks >= required + 15% (25 pts), marks >= required (20 pts), borderline within 5% (8 pts), below (0 pts). |
 | **Financial Need** | 25 pts | 25% | Income <= 50% of ceiling (25 pts), income <= ceiling (20 pts), exceeding ceiling (0 pts). |
-| **Category & Gender** | 15 pts | 15% | Matching targeted social category (SC/ST/OBC/EWS/Minority) and gender benefits (e.g. Pragati for girls). |
+| **Category & Gender** | 15 pts | 15% | Matching targeted social category and gender criteria recorded in the data. |
 | **State Domicile** | 15 pts | 15% | All-India schemes (15 pts), direct state domicile match (15 pts), other states (0 pts). |
 
-### 5.2 Deterministic Eligibility Rule Engine
+### 5.2 Preliminary Eligibility Rule Engine
 
 Implemented in [`src/lib/eligibility.ts`](file:///e:/grantly/src/lib/eligibility.ts), this engine evaluates declared requirements against the student's profile:
 
 - **Input**: `Scholarship` object + `StudentProfile` object.
-- **Output**: `EligibilityReport` with:
+- **Output**: `EligibilityReport` comparing criteria present in the record with profile data. It is preliminary and the data may be incomplete or stale. It now checks education, marks, income, gender, domicile, category, course, disability, and age when those requirements are supplied.
   - `status`: `'ELIGIBLE' | 'POTENTIALLY_ELIGIBLE' | 'NOT_ELIGIBLE' | 'PROFILE_INCOMPLETE'`
-  - `overallScore`: Percentage of mandatory criteria satisfied.
+  - `overallScore`: Percentage of recorded mandatory criteria satisfied; zero when no mandatory rules are available.
   - `rules`: Array of `RuleEvaluation` entries containing name, student value, required benchmark, and status (`satisfied`, `failed`, or `missing_info`).
-  - `actionItems`: Remediation steps for the student.
+  - `actionItems`: Next steps based on failed or missing profile details.
+
+Provider confirmation is still required before applying.
 
 ### 5.3 Application Readiness Index
 
 Implemented in [`src/lib/readiness.ts`](file:///e:/grantly/src/lib/readiness.ts):
-- Compares `scholarship.requiredDocuments` against `documents` uploaded in the student's **Document Vault**.
-- Confirms whether student onboarding is complete.
-- Confirms eligibility verification.
-- Calculates an aggregate `readinessScore` (0–100%) and returns an itemized checklist.
+- Compares required document types against document metadata records in the vault (file contents are not stored).
+- Includes profile completion and preliminary eligibility in the checklist score.
+- `isReadyToApply` is true only when the profile is complete, recorded mandatory criteria pass, and every required document type is present. It does not mean official approval.
 
 ### 5.4 Deadline Intelligence & Countdown Calculations
 
 Implemented in [`src/lib/deadline.ts`](file:///e:/grantly/src/lib/deadline.ts):
-- Computes difference between `Date.now()` and ISO deadline.
+- Computes calendar-day difference using the current India date and the recorded ISO deadline.
 - Classifies urgency:
   - `isClosingSoon`: 7 days or fewer remaining (Red alert).
-  - `isDueThisMonth`: 30 days or fewer remaining (Amber notice).
-  - `isOpen`: More than 30 days remaining (Normal blue/green badge).
-  - `isPassed`: Deadline elapsed (Gray badge).
+  - `badgeType`: `critical` (7 days or fewer), `warning` (8–30 days), `normal` (more than 30 days), or `expired`.
+  - `isExpired`: Deadline has passed. Date-only values are compared as calendar days in the `Asia/Kolkata` time zone.
 
 ---
 
@@ -310,25 +309,25 @@ sequenceDiagram
     participant ReadyEng as readiness.ts
     participant LS as Browser LocalStorage
 
-    Student->>Vault: Uploads "Income Certificate" (PDF file)
+    Student->>Vault: Selects a local file for a document record
     Vault->>AppCtx: uploadDocument({ documentType: "Income Certificate", fileName, fileSize })
-    AppCtx->>AppCtx: Generate UUID, set verified = true, timestamp = now()
+    AppCtx->>AppCtx: Store metadata, set verified = false, timestamp = now()
     AppCtx->>LS: Serialize to grantly_v1_documents
     Student->>Vault: Views Readiness Matrix
     Vault->>ReadyEng: calculateApplicationReadiness(scholarship, profile, documents)
-    ReadyEng-->>Vault: Return readinessScore (e.g. 100% Ready)
-    Vault-->>Student: Updates progress bar to 100% & enables direct apply button
+    ReadyEng-->>Vault: Return preparation score and missing-item checklist
+    Vault-->>Student: Show document metadata coverage; file bytes are not retained
 ```
 
 ---
 
 ## 7. Authentication & Session Architecture
 
-GRANTLY's current implementation uses an **offline-first, client-side session management model**:
+GRANTLY's current implementation uses a **simulated client-side demo session**, not production authentication:
 
 1. **Pre-Seeded Demo Profile**: By default, the application runs with an authenticated session initialized to **Priya Sharma** (`student-demo-priya`), allowing immediate evaluation of all matching, scoring, and tracking features.
 2. **One-Click Demo Switcher**: The Login screen (`/login`) allows one-click demo login or custom login.
-3. **Custom Registration Flow**: The Signup wizard (`/signup`) captures student credentials and passes them to `login(customProfile)` in `AppContext`, which creates an active session.
+3. **Custom Registration Flow**: The Signup wizard gathers profile fields locally and calls the client state action; it does not create or verify a server account.
 4. **Session Persistence**: Session state is persisted in `LocalStorage` (`grantly_v1_profile` and `grantly_v1_auth`). Logging out resets session state without destroying public catalog browsing capabilities.
 
 ---
@@ -348,16 +347,16 @@ GRANTLY stores all mutable state in the browser's `LocalStorage` with resilient 
 ### Error Resiliency & Safe Initialization
 
 To prevent React 19 hydration mismatches and handle browser storage exceptions (such as private browsing mode):
-- State hooks in `AppContext.tsx` use lazy initializer functions (`useState(() => { try { ... } catch { ... } })`).
-- If `localStorage` is inaccessible or JSON parsing fails, the system safely falls back to demo data without throwing unhandled exceptions.
+- The provider renders matching demo defaults on the server and first client pass, then restores localStorage in an effect.
+- JSON parsing errors fall back to demo data. Persisted object contents are not fully schema-validated.
 
 ---
 
 ## 9. Security & Privacy Considerations
 
-- **Client Data Isolation**: All student personal data, income declarations, and document records remain completely within the client's browser local storage. No Personally Identifiable Information (PII) is transmitted across third-party networks.
+- **Prototype Data Limits**: The application contains no backend API for sending profile data, but this has not been verified with network monitoring. Browser localStorage is user-editable and should not hold sensitive identity documents.
 - **XSS Mitigation**: React 19's virtual DOM escapes all dynamic values rendered in JSX by default, preventing reflected or stored Cross-Site Scripting.
-- **Document Safety**: Document uploads are handled as metadata representations with mock file handles in the prototype phase, preventing local file system compromise or unauthorized execution.
+- **Document Handling**: The vault records file metadata only; it does not retain binary file contents or verify certificates.
 - **Content Security**: No dynamic `eval()` or unvalidated `dangerouslySetInnerHTML` is used anywhere in the codebase.
 
 ---

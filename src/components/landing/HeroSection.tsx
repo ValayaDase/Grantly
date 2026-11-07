@@ -24,6 +24,11 @@ export default function HeroSection() {
         typeof window !== 'undefined' &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      // Leave the server-rendered layout in its natural visible state when the
+      // visitor has asked us to avoid motion. This skips both entrance effects
+      // and the continuously moving scholarship marquees.
+      if (prefersReducedMotion) return;
+
       const heading = container.current?.querySelector(
         '.scramble-heading'
       ) as HTMLElement | null;
@@ -142,7 +147,7 @@ export default function HeroSection() {
       );
 
       // Step 5: Start continuous opposing-direction carousels
-      if (!prefersReducedMotion && leftTrack && rightTrack) {
+      if (leftTrack && rightTrack) {
         entrance.add(() => {
           // Left column moves continuously UPWARD
           gsap.fromTo(
@@ -212,6 +217,7 @@ export default function HeroSection() {
             <Search size={22} />
             <input
               type="text"
+              aria-label="Search scholarships and schemes"
               placeholder="Search scholarships, schemes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

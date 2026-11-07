@@ -31,6 +31,23 @@ function ScholarshipsContent() {
     if (q) {
       updateFilter('searchQuery', q);
     }
+
+    const provider = searchParams.get('provider');
+    const providerTypes = ['Government', 'Private', 'Trust / NGO', 'Corporate CSR'];
+    if (provider && providerTypes.includes(provider)) {
+      updateFilter('providerType', provider);
+    }
+
+    const category = searchParams.get('category');
+    const categories = ['Merit-Based', 'Need-Based', 'STEM & Tech', 'Women Empowerment', 'Minority Welfare', 'Higher Education', 'Research & Innovation'];
+    if (category && categories.includes(category)) {
+      updateFilter('category', category);
+    }
+
+    const gender = searchParams.get('gender');
+    if (gender && ['male', 'female', 'other'].includes(gender)) {
+      updateFilter('gender', gender);
+    }
   }, [searchParams, updateFilter]);
 
   // Combined Search, Multi-Filter & Sorting Engine
@@ -115,8 +132,8 @@ function ScholarshipsContent() {
       if (filters.sortBy === 'deadline_soon') {
         return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
       }
-      if (filters.sortBy === 'recently_added') {
-        return b.id.localeCompare(a.id);
+      if (filters.sortBy === 'title_asc') {
+        return a.title.localeCompare(b.title, 'en');
       }
       // Default: 'recommended' by Match Score
       const matchA = calculateMatchScore(a, profile).totalScore;
@@ -139,6 +156,7 @@ function ScholarshipsContent() {
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
+            aria-label="Search scholarships"
             placeholder="Search by name, provider, course or tag..."
             value={filters.searchQuery}
             onChange={(e) => updateFilter('searchQuery', e.target.value)}
@@ -168,7 +186,7 @@ function ScholarshipsContent() {
               <option value="recommended">Sort: Best AI Match</option>
               <option value="deadline_soon">Sort: Deadline Soonest</option>
               <option value="highest_amount">Sort: Highest Value</option>
-              <option value="recently_added">Sort: Recently Added</option>
+              <option value="title_asc">Sort: Name A–Z</option>
             </select>
           </div>
 
@@ -270,7 +288,7 @@ export default function ScholarshipsPage() {
   return (
     <DashboardLayout
       title="Scholarship Discovery"
-      subtitle={`Explore ${allScholarships.length} verified Indian scholarships with personalized AI Match scores.`}
+      subtitle={`Explore ${allScholarships.length} sample scholarship records with profile-based match explanations.`}
     >
       <Suspense fallback={<div className="p-12 text-center text-xs text-slate-400">Loading discovery catalog...</div>}>
         <ScholarshipsContent />

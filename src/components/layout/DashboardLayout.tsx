@@ -16,7 +16,7 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#F8F9FC] overflow-hidden">
+    <div className="flex min-h-dvh bg-[#F8F9FC]">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar />
@@ -33,6 +33,7 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
             <div className="absolute top-3 right-3">
               <button
                 onClick={() => setMobileSidebarOpen(false)}
+                aria-label="Close sidebar"
                 className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100"
               >
                 <X className="w-5 h-5" />
@@ -44,14 +45,14 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0">
         <TopNav
           title={title}
           subtitle={subtitle}
           onOpenMobileMenu={() => setMobileSidebarOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28">
+        <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 focus:outline-none">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

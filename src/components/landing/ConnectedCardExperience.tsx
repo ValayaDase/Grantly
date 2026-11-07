@@ -2,6 +2,7 @@
 
 import React, { useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -22,6 +23,7 @@ if (typeof window !== 'undefined') {
 }
 
 export default function ConnectedCardExperience() {
+  const router = useRouter();
   const containerRef = useRef<HTMLElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
 
@@ -442,9 +444,6 @@ export default function ConnectedCardExperience() {
           <h2 className="text-3xl sm:text-[44px] font-bold text-[#171B2D] tracking-tight leading-tight">
             How GRANTLY Simplifies Your Scholarship Journey
           </h2>
-          <p className="text-sm sm:text-base text-[#72788A] max-w-xl mx-auto font-normal leading-relaxed">
-            Your scholarship journey, simplified into four effortless steps.
-          </p>
         </div>
 
         {/* SECTION B HEADER — FEATURED SCHOLARSHIPS */}
@@ -460,7 +459,7 @@ export default function ConnectedCardExperience() {
             Featured Indian Scholarships
           </h2>
           <p className="text-sm sm:text-base text-[#72788A] max-w-xl mx-auto font-normal leading-relaxed">
-            Discover verified opportunities curated for your academic journey.
+            Explore sample opportunities and compare their recorded requirements.
           </p>
         </div>
 
@@ -711,7 +710,7 @@ export default function ConnectedCardExperience() {
                   Curated Opportunities
                 </h3>
                 <p className="text-sm text-[#72788A] leading-relaxed max-w-xl font-normal">
-                  4 verified high-value scholarship schemes curated for your academic journey.
+                  4 sample scholarship records to explore and compare.
                 </p>
               </div>
 
@@ -735,7 +734,20 @@ export default function ConnectedCardExperience() {
           {/* ==================================================== */}
           <div
             ref={schCard1Ref}
-            className="absolute w-[500px] sm:w-[540px] lg:w-[570px] h-[255px] sm:h-[265px] bg-white rounded-[22px] border border-slate-200/80 shadow-sm hover:shadow-md p-6 sm:p-7 flex flex-col justify-between transform-gpu will-change-transform transition-shadow"
+            role="article"
+            tabIndex={0}
+            onClick={(e) => {
+              if ((e.target as HTMLElement).closest('a, button')) return;
+              router.push('/scholarships/reliance-foundation-ug-2026');
+            }}
+            onKeyDown={(e) => {
+              if (e.target !== e.currentTarget) return;
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                router.push('/scholarships/reliance-foundation-ug-2026');
+              }
+            }}
+            className="absolute w-[500px] sm:w-[540px] lg:w-[570px] h-[255px] sm:h-[265px] bg-white rounded-[22px] border border-slate-200/80 shadow-sm hover:shadow-md p-6 sm:p-7 flex flex-col justify-between transform-gpu will-change-transform transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
           >
             <div>
               <div className="flex items-start justify-between gap-3">
@@ -788,7 +800,20 @@ export default function ConnectedCardExperience() {
           {/* ==================================================== */}
           <div
             ref={schCard2Ref}
-            className="absolute w-[500px] sm:w-[540px] lg:w-[570px] h-[255px] sm:h-[265px] bg-white rounded-[22px] border border-slate-200/80 shadow-sm hover:shadow-md p-6 sm:p-7 flex flex-col justify-between transform-gpu will-change-transform transition-shadow"
+            role="article"
+            tabIndex={0}
+            onClick={(e) => {
+              if ((e.target as HTMLElement).closest('a, button')) return;
+              router.push('/scholarships/aicte-pragati-girls-2026');
+            }}
+            onKeyDown={(e) => {
+              if (e.target !== e.currentTarget) return;
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                router.push('/scholarships/aicte-pragati-girls-2026');
+              }
+            }}
+            className="absolute w-[500px] sm:w-[540px] lg:w-[570px] h-[255px] sm:h-[265px] bg-white rounded-[22px] border border-slate-200/80 shadow-sm hover:shadow-md p-6 sm:p-7 flex flex-col justify-between transform-gpu will-change-transform transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
           >
             <div>
               <div className="flex items-start justify-between gap-3">
@@ -841,7 +866,20 @@ export default function ConnectedCardExperience() {
           {/* ==================================================== */}
           <div
             ref={schCard3Ref}
-            className="absolute w-[500px] sm:w-[540px] lg:w-[570px] h-[255px] sm:h-[265px] bg-white rounded-[22px] border border-slate-200/80 shadow-sm hover:shadow-md p-6 sm:p-7 flex flex-col justify-between transform-gpu will-change-transform transition-shadow"
+            role="article"
+            tabIndex={0}
+            onClick={(e) => {
+              if ((e.target as HTMLElement).closest('a, button')) return;
+              router.push('/scholarships/hdfc-badhte-kadam-2026');
+            }}
+            onKeyDown={(e) => {
+              if (e.target !== e.currentTarget) return;
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                router.push('/scholarships/hdfc-badhte-kadam-2026');
+              }
+            }}
+            className="absolute w-[500px] sm:w-[540px] lg:w-[570px] h-[255px] sm:h-[265px] bg-white rounded-[22px] border border-slate-200/80 shadow-sm hover:shadow-md p-6 sm:p-7 flex flex-col justify-between transform-gpu will-change-transform transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
           >
             <div>
               <div className="flex items-start justify-between gap-3">
@@ -894,7 +932,20 @@ export default function ConnectedCardExperience() {
           {/* ==================================================== */}
           <div
             ref={schCard4Ref}
-            className="absolute w-[500px] sm:w-[540px] lg:w-[570px] h-[255px] sm:h-[265px] bg-white rounded-[22px] border border-slate-200/80 shadow-sm hover:shadow-md p-6 sm:p-7 flex flex-col justify-between transform-gpu will-change-transform transition-shadow"
+            role="article"
+            tabIndex={0}
+            onClick={(e) => {
+              if ((e.target as HTMLElement).closest('a, button')) return;
+              router.push('/scholarships/infosys-stem-stars-2026');
+            }}
+            onKeyDown={(e) => {
+              if (e.target !== e.currentTarget) return;
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                router.push('/scholarships/infosys-stem-stars-2026');
+              }
+            }}
+            className="absolute w-[500px] sm:w-[540px] lg:w-[570px] h-[255px] sm:h-[265px] bg-white rounded-[22px] border border-slate-200/80 shadow-sm hover:shadow-md p-6 sm:p-7 flex flex-col justify-between transform-gpu will-change-transform transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
           >
             <div>
               <div className="flex items-start justify-between gap-3">
@@ -1035,12 +1086,27 @@ export default function ConnectedCardExperience() {
               Featured Indian Scholarships
             </h2>
             <p className="text-xs sm:text-sm text-[#72788A] max-w-lg mx-auto">
-              Discover verified opportunities curated for your academic journey.
+              Explore sample opportunities and compare their recorded requirements.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div
+              role="article"
+              tabIndex={0}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('a, button')) return;
+                router.push('/scholarships/reliance-foundation-ug-2026');
+              }}
+              onKeyDown={(e) => {
+                if (e.target !== e.currentTarget) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  router.push('/scholarships/reliance-foundation-ug-2026');
+                }
+              }}
+              className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
+            >
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   Reliance Foundation
@@ -1067,7 +1133,22 @@ export default function ConnectedCardExperience() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div
+              role="article"
+              tabIndex={0}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('a, button')) return;
+                router.push('/scholarships/aicte-pragati-girls-2026');
+              }}
+              onKeyDown={(e) => {
+                if (e.target !== e.currentTarget) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  router.push('/scholarships/aicte-pragati-girls-2026');
+                }
+              }}
+              className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
+            >
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   AICTE • Ministry of Education
@@ -1094,7 +1175,22 @@ export default function ConnectedCardExperience() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div
+              role="article"
+              tabIndex={0}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('a, button')) return;
+                router.push('/scholarships/hdfc-badhte-kadam-2026');
+              }}
+              onKeyDown={(e) => {
+                if (e.target !== e.currentTarget) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  router.push('/scholarships/hdfc-badhte-kadam-2026');
+                }
+              }}
+              className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
+            >
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   HDFC Bank Parivartan
@@ -1121,7 +1217,22 @@ export default function ConnectedCardExperience() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div
+              role="article"
+              tabIndex={0}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('a, button')) return;
+                router.push('/scholarships/infosys-stem-stars-2026');
+              }}
+              onKeyDown={(e) => {
+                if (e.target !== e.currentTarget) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  router.push('/scholarships/infosys-stem-stars-2026');
+                }
+              }}
+              className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-3 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5B4BDB]/30"
+            >
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                   Infosys Foundation

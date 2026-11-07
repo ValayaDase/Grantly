@@ -2,6 +2,8 @@
 
 Welcome to the official technical documentation for **GRANTLY – Unified Scholarship Discovery & Management Platform**.
 
+> **Implementation boundary:** GRANTLY is currently a browser-side prototype with 18 seeded scholarship records and a seeded demo profile. Scholarship criteria and deadlines are not a live, independently verified feed. Login is simulated, user-managed application statuses are not synced to providers, and document records store metadata only (not file bytes). Eligibility is preliminary and must be confirmed with the provider.
+
 This documentation suite provides a comprehensive guide for developers, system architects, students, evaluators, and open-source contributors. It covers every aspect of the platform: from architectural blueprints and IEEE-style Software Requirements Specifications (SRS) to installation protocols, local data architecture, and end-user workflows.
 
 ---
@@ -10,25 +12,28 @@ This documentation suite provides a comprehensive guide for developers, system a
 
 | Document | File Path | Target Audience | Description |
 | :--- | :--- | :--- | :--- |
-| **System Architecture** | [`docs/architecture/SYSTEM_ARCHITECTURE.md`](./architecture/SYSTEM_ARCHITECTURE.md) | Architects, Tech Leads, Engineers | Complete architecture blueprint, component hierarchies, state flows, Mermaid sequence diagrams, and security design. |
+| **System Architecture** | [`docs/architecture/SYSTEM_ARCHITECTURE.md`](./architecture/SYSTEM_ARCHITECTURE.md) | Architects, Tech Leads, Engineers | Current client architecture, component hierarchy, domain logic, state flows, and prototype security limits. |
 | **Software Requirements Specification (SRS)** | [`docs/requirements/SRS.md`](./requirements/SRS.md) | Product Managers, QA, Engineers | IEEE-inspired specification with numbered functional (`FR-xx`) and non-functional (`NFR-xx`) requirements, use case diagrams, and workflows. |
 | **Database & Data Architecture** | [`docs/database/DATABASE_DOCUMENTATION.md`](./database/DATABASE_DOCUMENTATION.md) | Backend Engineers, Database Architects | Data modeling, Mermaid ER diagrams, LocalStorage schema, TypeScript entities, validation rules, and future SQL migration schemas. |
 | **User Guide** | [`docs/user-guide/USER_GUIDE.md`](./user-guide/USER_GUIDE.md) | Students, Evaluators, End Users | Step-by-step walkthrough covering onboarding, search, match score interpretation, eligibility audits, pipeline tracking, and document vaulting. |
 | **Installation & Setup** | [`docs/INSTALLATION.md`](./INSTALLATION.md) | Developers, DevOps, Evaluators | Prerequisites, package installations, dependencies with versions and purposes, execution scripts, and troubleshooting. |
+| **Testing Documentation** | [`docs/TESTING_DOCUMENTATION.md`](./TESTING_DOCUMENTATION.md) | QA, Developers, Evaluators | Vitest test plan, 20 test cases covering eligibility, match score, deadline, and readiness algorithms. |
+| **Accessibility Audit** | [`docs/ACCESSIBILITY_AUDIT.md`](./ACCESSIBILITY_AUDIT.md) | Accessibility Specialists, Evaluators | WCAG 2.1 AA evaluation report covering keyboard navigation, contrast, ARIA labels, and reduced motion. |
+| **Final FAIE Evaluation** | [`docs/FINAL_FAIE_EVALUATION.md`](./FINAL_FAIE_EVALUATION.md) | Evaluators, Stakeholders | Official rubric assessment, category breakdowns, and verified project scores. |
 | **Project README** | [`README.md`](../README.md) | General Public, Evaluators, GitHub | High-level overview, feature highlights, quick-start guide, and technology stack. |
 
 ---
 
 ## 🎯 Platform At A Glance
 
-**GRANTLY** is an EdTech SaaS platform designed to solve scholarship discovery, evaluation, and application tracking for Indian students. Built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, GSAP, and Framer Motion, it features:
+**GRANTLY** is a client-side scholarship discovery and preparation prototype built with Next.js 16, React 19, TypeScript, Tailwind CSS v4, GSAP, and Framer Motion. It features:
 
-- **Deterministic Smart Eligibility Checker**: A multi-point rule engine that audits student qualifications against scholarship criteria with zero black-box ambiguity.
-- **Explainable Match Engine**: A 100-point weighted scoring algorithm factoring education level, academic marks, financial need, category reservation, and state domicile.
+- **Preliminary Eligibility Checker**: A rule engine that compares profile fields with the criteria recorded in the local sample dataset.
+- **Explainable Profile Match**: A deterministic heuristic across education, marks, income, category/gender, and domicile; it is not AI or an award probability.
 - **7-Stage Application Lifecycle Pipeline**: Kanban-style tracker taking students from *Saved* through *Planning*, *Applied*, *Under Review*, *Shortlisted*, to *Approved* or *Rejected*.
-- **Local Document Vault & Readiness Index**: An offline-first document manager that cross-references required paperwork and scores whether an application is 100% ready for submission.
+- **Document Metadata & Preparation Checklist**: Cross-references required document types with records in browser storage; file bytes are not retained.
 - **Side-by-Side Opportunity Comparison**: A synchronized comparison drawer evaluating up to 3 scholarships across financial aid, deadlines, and documentation.
-- **Zero-Latency Client State Persistence**: All student profile data, bookmarks, pipeline stages, and document metadata persist reliably in browser `LocalStorage`.
+- **Browser Persistence**: Demo profile, bookmarks, tracker entries, and document metadata are stored in browser `localStorage`; this is not a secure account or private document store.
 
 ---
 

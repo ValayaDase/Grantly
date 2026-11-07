@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --primary: #5B4BDB;
@@ -14,6 +16,20 @@
     --border: #E5E7EB;
   }
 
+  .dark {
+    --primary: #6E5FF0;
+    --primary-hover: #5B4BDB;
+    --primary-light: #24204A;
+    --accent: #18B6A4;
+    --accent-hover: #14A090;
+    --background: #0E1118;
+    --foreground: #F8F9FC;
+    --muted: #9BA3B8;
+    --card: #161A26;
+    --border: #262C3D;
+    color-scheme: dark;
+  }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
@@ -21,7 +37,91 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
+}
+
+/* =================================
+   DARK MODE COMPREHENSIVE OVERRIDES
+================================= */
+.dark body {
+  background-color: #0E1118 !important;
+  color: #F8F9FC !important;
+}
+
+.dark .bg-\[\#F8F9FC\],
+.dark .bg-\[\#F7F8FC\] {
+  background-color: #0E1118 !important;
+}
+
+.dark .bg-white {
+  background-color: #161A26 !important;
+  color: #F8F9FC !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-slate-50\/80 {
+  background-color: #1F2433 !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: #262C3D !important;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-200\/80 {
+  border-color: #262C3D !important;
+}
+
+.dark .text-\[\#171B2D\] {
+  color: #F8F9FC !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-800 {
+  color: #E2E8F0 !important;
+}
+
+.dark .text-slate-500,
+.dark .text-slate-600,
+.dark .text-\[\#72788A\] {
+  color: #9BA3B8 !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1F2433 !important;
+  color: #F8F9FC !important;
+  border-color: #2F364B !important;
+}
+
+.dark .bg-\[\#EEEAFE\] {
+  background-color: #24204A !important;
+  color: #A594FD !important;
+}
+
+.dark .bg-\[\#EEEAFE\]\/60,
+.dark .bg-\[\#EEEAFE\]\/50 {
+  background-color: #24204A !important;
+}
+
+.dark header {
+  background-color: rgba(22, 26, 38, 0.9) !important;
+  border-color: #262C3D !important;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #161A26;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2D3348;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3F4764;
 }
 
 /* Custom scrollbars */
@@ -625,6 +725,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
   .scholarship-card,
   .card-arrow {
     transition: none;

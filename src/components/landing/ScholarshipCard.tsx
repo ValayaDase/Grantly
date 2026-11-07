@@ -22,9 +22,11 @@ export default function ScholarshipCard({
       className="scholarship-card group cursor-pointer"
       onClick={onClick}
       role="button"
+      aria-label={`Explore ${title}`}
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
           onClick?.();
         }
       }}
@@ -35,17 +37,9 @@ export default function ScholarshipCard({
 
       <h3>{title}</h3>
 
-      <button
-        type="button"
-        className="card-arrow"
-        aria-label={`Explore ${title}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          onClick?.();
-        }}
-      >
+      <span className="card-arrow" aria-hidden="true">
         <ArrowUpRight size={20} />
-      </button>
+      </span>
     </div>
   );
 }

@@ -128,7 +128,28 @@ Evaluates required documents (e.g. *Aadhaar Card*, *Tahsildar Income Certificate
 ### 5. Multi-Stage Application Pipeline (`src/app/applications/page.tsx`)
 Track applications across 7 verified stages:
 `Saved` ➔ `Planning to Apply` ➔ `Applied` ➔ `Under Review` ➔ `Shortlisted` ➔ `Approved` ➔ `Rejected`.
-Supports application reference numbers, personal checklist notes, and submission dates.
+Supports application reference numbers, personal checklist notes, and submission dates with a 1-click **Export CSV** feature to audit the complete student pipeline.
+
+### 6. Cinematic 3D Scroll Storytelling (`src/components/landing/FloatingPaperPlane.tsx`)
+A single persistent 3D lavender paper plane with transparent alpha masking guides the student through the entire landing page after the Hero Section:
+- **Panoramic Motion Path**: Curved trajectories synchronized with page scroll depth via GSAP ScrollTrigger (`scrub: 1.2`).
+- **Dynamic Scale Transitions**: Scales from Small (`0.65–0.75`), to Medium (`0.85–0.98`), to Heroic Large (`1.20`) at the final call-to-action.
+- **Dual-Layer Flight Physics**: Scroll-driven path combined with continuous aerodynamic micro-oscillations and SVG windstream trails.
+- **Interactive Safety**: Configured with `pointer-events: none` and responsive `gsap.matchMedia()` definitions.
+
+### 7. Tilted Dual Vertical Marquee (`src/components/landing/ScholarshipCards.tsx`)
+- Unified `-8deg` tilted parent composition containing two independently moving vertical marquee columns.
+- The left column travels upward while the right column travels downward at offset speeds using seamless `yPercent` looping.
+- Individual cards maintain clean rectangular horizontal orientation inside the tilted frame.
+
+### 8. GSAP Stacked-Card Workflow (`src/components/landing/HowItWorks.tsx`)
+- Pinned scroll-driven card deck where steps `01` through `04` stack over each other as the student scrolls.
+- Preceding cards scale down (`0.94`, `0.88`, `0.82`) and shift upward, leaving previous step headers visible like an elevated card deck.
+- Accompanied by a live progress bar (`25%` → `100%`) and dynamic step counter.
+
+### 9. Verified Document Vault with Certificate Preview (`src/app/documents/page.tsx`)
+- Local document repository indexing 9 key Indian scholarship certificates with zero server data leakage.
+- Includes a **Verified Certificate Preview Modal** simulating official government issuer stamps, masked beneficiary credentials, SHA-256 seal verification, and QR code audit data.
 
 ---
 

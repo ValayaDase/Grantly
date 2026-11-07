@@ -7,7 +7,7 @@ import { useGSAP } from '@gsap/react';
 import { Search, Zap, ShieldCheck, ChartNoAxesCombined } from 'lucide-react';
 
 import ScholarshipCards from './ScholarshipCards';
-import { createScrambleTween } from '@/lib/animations';
+import { createGradientRevealTween } from '@/lib/animations';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(useGSAP);
@@ -66,6 +66,11 @@ export default function HeroSection() {
         y: 35,
       });
 
+      gsap.set(heading, {
+        opacity: 0,
+        y: 22,
+      });
+
       gsap.set('.hero-support', {
         autoAlpha: 0,
         y: 20,
@@ -109,7 +114,7 @@ export default function HeroSection() {
         );
       }
 
-      // Step 3: Hero content appears & heading scrambles
+      // Step 3: Hero content appears & heading reveals with animated gradient
       entrance.to(
         '.hero-copy',
         {
@@ -121,7 +126,7 @@ export default function HeroSection() {
         '-=0.6'
       );
 
-      entrance.add(createScrambleTween(heading, originalText), '-=0.2');
+      entrance.add(createGradientRevealTween(heading, originalText), '-=0.25');
 
       // Step 4: Description, search form, and feature pills appear
       entrance.to(
@@ -179,7 +184,7 @@ export default function HeroSection() {
           </div>
 
           <h1
-            className="scramble-heading"
+            className="scramble-heading gradient-reveal-heading"
             data-text="Your Future Deserves Every Opportunity."
           >
             Your Future Deserves Every Opportunity.

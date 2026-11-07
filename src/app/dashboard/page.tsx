@@ -6,6 +6,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useApp } from '@/context/AppContext';
 import { getRecommendedScholarships } from '@/lib/recommendation';
 import { getDeadlineInfo } from '@/lib/deadline';
+import { AnalyticsChart } from '@/components/dashboard/AnalyticsChart';
 import {
   Sparkles,
   Bookmark,
@@ -265,6 +266,9 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
+
+            {/* Interactive Pipeline & Pool Analytics */}
+            <AnalyticsChart />
 
             {/* Application Pipeline Status Overview */}
             <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">

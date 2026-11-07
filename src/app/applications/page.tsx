@@ -19,6 +19,7 @@ import {
   Building,
   AlertTriangle,
   FileText,
+  Download,
 } from 'lucide-react';
 
 export default function ApplicationsPage() {
@@ -72,6 +73,41 @@ export default function ApplicationsPage() {
     if (!deleteCandidate) return;
     deleteApplication(deleteCandidate.id);
     setDeleteCandidate(null);
+  };
+
+  const exportToCSV = () => {
+    if (applications.length === 0) return;
+    const headers = [
+      'Scholarship Title',
+      'Provider',
+      'Amount (INR)',
+      'Status',
+      'Deadline',
+      'Ref Number',
+      'Applied Date',
+      'Notes',
+    ];
+    const rows = applications.map((app) => [
+      `"${app.scholarship.title.replace(/"/g, '""')}"`,
+      `"${app.scholarship.provider.replace(/"/g, '""')}"`,
+      app.scholarship.amount,
+      `"${app.status}"`,
+      `"${app.submissionDeadline}"`,
+      `"${app.applicationRefNumber || 'N/A'}"`,
+      `"${app.appliedDate || 'N/A'}"`,
+      `"${(app.notes || '').replace(/"/g, '""')}"`,
+    ]);
+
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `GRANTLY_Applications_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const getStatusColor = (status: ApplicationStatus) => {
@@ -136,9 +172,18 @@ export default function ApplicationsPage() {
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-            <span className="text-xs font-bold text-slate-500">
+            <span className="text-xs font-bold text-slate-500 hidden md:inline">
               Showing {filteredApps.length} of {applications.length}
             </span>
+
+            <button
+              onClick={exportToCSV}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
+              title="Download Applications CSV"
+            >
+              <Download className="w-4 h-4" />
+              Export CSV
+            </button>
 
             <Link
               href="/scholarships"

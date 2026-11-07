@@ -87,3 +87,458 @@
     box-shadow: 0 0 0 0 rgba(24, 182, 164, 0);
   }
 }
+
+/* =================================
+   HERO SECTION
+================================= */
+
+.hero-section {
+  width: 100%;
+  min-height: 100svh;
+  position: relative;
+  overflow: hidden;
+  padding: 100px 5%;
+  background:
+    radial-gradient(
+      circle at 75% 45%,
+      rgba(118, 85, 255, 0.13),
+      transparent 40%
+    ),
+    #fcfbff;
+}
+
+.hero-container {
+  max-width: 1450px;
+  min-height: 700px;
+  margin: auto;
+
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+
+  align-items: center;
+  gap: 25px;
+}
+
+/* =================================
+   LEFT HERO CONTENT
+================================= */
+
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 600px;
+}
+
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 11px 18px;
+  border-radius: 30px;
+
+  background: #f0eaff;
+  color: #6240d9;
+
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 28px;
+}
+
+.scramble-heading {
+  font-size: clamp(43px, 5vw, 70px);
+  line-height: 1.08;
+  letter-spacing: -2.8px;
+  font-weight: 800;
+  color: #17152f;
+  max-width: 600px;
+  overflow-wrap: break-word;
+}
+
+.hero-description {
+  color: #73738b;
+  font-size: 18px;
+  line-height: 1.7;
+  margin-top: 25px;
+  max-width: 540px;
+}
+
+/* SEARCH */
+
+.hero-search {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  max-width: 570px;
+  padding: 9px 10px 9px 18px;
+
+  background: white;
+  border: 1px solid #e2d9ff;
+  border-radius: 18px;
+
+  box-shadow: 0 8px 30px rgba(93, 65, 180, 0.08);
+  margin-top: 32px;
+}
+
+.hero-search input {
+  flex: 1;
+  min-width: 0;
+  outline: none;
+  border: none;
+  background: transparent;
+  color: #25213f;
+}
+
+.hero-search button {
+  flex-shrink: 0;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 13px;
+  background: #653ce7;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* FEATURES */
+
+.hero-features {
+  display: flex;
+  gap: 25px;
+  margin-top: 40px;
+}
+
+.hero-features > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: #292442;
+}
+
+.hero-features svg {
+  width: 38px;
+  height: 38px;
+  padding: 9px;
+  color: #7049e8;
+  background: #eee8ff;
+  border-radius: 11px;
+  flex-shrink: 0;
+}
+
+/* =================================
+   RIGHT SIDE CARD COMPOSITION
+================================= */
+
+.hero-visual {
+  width: 100%;
+  min-width: 0;
+  height: 720px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: visible;
+}
+
+.cards-entrance {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ENTIRE CONTAINER TILTED */
+
+.scholarship-tilt {
+  width: min(100%, 660px);
+
+  transform: rotate(-8deg);
+  transform-origin: center center;
+}
+
+/* TWO EVEN COLUMNS */
+
+.scholarship-stage {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 25px;
+  align-items: start;
+}
+
+/* COLUMN */
+
+.scholarship-column {
+  width: 100%;
+  height: 650px;
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 6%,
+    rgba(0, 0, 0, 1) 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 6%,
+    rgba(0, 0, 0, 1) 94%,
+    transparent 100%
+  );
+}
+
+/* CONTINUOUS TRACK */
+
+.marquee-track {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+/* DUPLICATED GROUP */
+
+.marquee-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-bottom: 22px;
+  flex-shrink: 0;
+}
+
+/* =================================
+   INDIVIDUAL CARDS
+================================= */
+
+.scholarship-card {
+  width: 100%;
+  height: 190px;
+  flex-shrink: 0;
+
+  position: relative;
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  background: #ffffff;
+  border: 1px solid #e8dfff;
+  border-radius: 27px;
+
+  box-shadow:
+    0 12px 35px rgba(83, 63, 151, 0.09);
+
+  /* NO INDIVIDUAL ROTATION */
+  transform: none !important;
+
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.scholarship-card:hover {
+  border-color: #bca9ff;
+  box-shadow:
+    0 18px 40px rgba(83, 63, 151, 0.16);
+}
+
+.scholarship-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 19px;
+}
+
+.scholarship-card h3 {
+  max-width: 85%;
+  font-size: 19px;
+  font-weight: 750;
+  line-height: 1.3;
+  color: #17152f;
+  letter-spacing: -0.4px;
+}
+
+.card-arrow {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f0eaff;
+  color: #6840db;
+
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.card-arrow:hover {
+  background: #6840db;
+  color: white;
+}
+
+/* ICON COLORS */
+
+.icon-purple {
+  background: #f0e8ff;
+  color: #7145e8;
+}
+
+.icon-blue {
+  background: #e5efff;
+  color: #3980ec;
+}
+
+.icon-orange {
+  background: #fff2dc;
+  color: #e69a22;
+}
+
+.icon-pink {
+  background: #ffe8f0;
+  color: #e84f89;
+}
+
+.icon-green {
+  background: #e1f8ef;
+  color: #18a77b;
+}
+
+/* =================================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 1050px) {
+  .hero-container {
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 15px;
+  }
+
+  .scholarship-tilt {
+    width: 115%;
+  }
+
+  .scholarship-card {
+    height: 165px;
+    padding: 16px;
+  }
+
+  .scholarship-card h3 {
+    font-size: 16px;
+  }
+
+  .scholarship-column {
+    height: 570px;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-section {
+    padding: 85px 20px 55px;
+  }
+
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 55px;
+  }
+
+  .scramble-heading {
+    font-size: 43px;
+    letter-spacing: -1.8px;
+  }
+
+  .hero-visual {
+    height: 540px;
+  }
+
+  .scholarship-tilt {
+    width: 90%;
+    transform: rotate(-5deg);
+  }
+
+  .scholarship-stage {
+    gap: 15px;
+  }
+
+  .scholarship-column {
+    height: 500px;
+  }
+
+  .scholarship-card {
+    height: 145px;
+    border-radius: 19px;
+    padding: 13px;
+  }
+
+  .scholarship-icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 13px;
+  }
+
+  .scholarship-icon svg {
+    width: 25px;
+  }
+
+  .scholarship-card h3 {
+    font-size: 14px;
+  }
+
+  .card-arrow {
+    width: 30px;
+    height: 30px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .hero-features {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-visual {
+    height: 460px;
+  }
+
+  .scholarship-column {
+    height: 420px;
+  }
+
+  .scholarship-card {
+    height: 125px;
+  }
+
+  .scholarship-card h3 {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scholarship-card,
+  .card-arrow {
+    transition: none;
+  }
+}

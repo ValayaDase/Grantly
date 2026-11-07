@@ -14,12 +14,19 @@ import {
   AlertCircle,
   ShieldCheck,
   Plus,
+  Eye,
+  Download,
+  QrCode,
+  Building2,
+  BadgeCheck,
 } from 'lucide-react';
 
 export default function DocumentVaultPage() {
-  const { documents, uploadDocument, deleteDocument, allScholarships, savedScholarshipIds } =
+  const { documents, uploadDocument, deleteDocument, allScholarships, savedScholarshipIds, profile } =
     useApp();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState<DocumentItem | null>(null);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [selectedDocType, setSelectedDocType] =
     useState<DocumentItem['documentType']>('Income Certificate');
   const [customFileName, setCustomFileName] = useState('');
@@ -202,6 +209,16 @@ export default function DocumentVaultPage() {
                         <CheckCircle2 className="w-3 h-3" /> Verified
                       </span>
                       <button
+                        onClick={() => {
+                          setPreviewDoc(doc);
+                          setDownloadSuccess(false);
+                        }}
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-[#5B4BDB] hover:bg-[#EEEAFE] transition-colors"
+                        title="Preview certificate"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
                         onClick={() => deleteDocument(doc.id)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                         title="Delete from vault"
@@ -354,6 +371,127 @@ export default function DocumentVaultPage() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Simulated Document Preview Modal */}
+      <Modal
+        isOpen={!!previewDoc}
+        onClose={() => setPreviewDoc(null)}
+        title={previewDoc ? `Verified Preview: ${previewDoc.documentType}` : 'Document Preview'}
+        maxWidth="lg"
+      >
+        {previewDoc && (
+          <div className="space-y-5">
+            {/* Certificate Header Banner */}
+            <div className="rounded-2xl border-2 border-emerald-500/30 bg-gradient-to-b from-emerald-50/80 via-white to-slate-50 p-5 shadow-xs relative overflow-hidden">
+              <div className="flex items-center justify-between pb-3 border-b border-emerald-200/60">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+                    <Building2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider font-extrabold text-emerald-800">
+                      Official Repository Certificate
+                    </div>
+                    <div className="text-xs font-bold text-[#171B2D]">
+                      Govt. of India & State Partner Portals
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                  <BadgeCheck className="w-3.5 h-3.5" />
+                  Verified
+                </div>
+              </div>
+
+              {/* Certificate Body */}
+              <div className="py-4 space-y-3">
+                <div className="text-center space-y-1">
+                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">
+                    Certificate Type
+                  </div>
+                  <div className="text-base font-black text-[#171B2D]">
+                    {previewDoc.documentType}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2 text-xs">
+                  <div className="bg-white/80 p-2.5 rounded-xl border border-slate-200/80">
+                    <span className="text-[10px] text-slate-400 block font-semibold">Beneficiary Name</span>
+                    <span className="font-bold text-[#171B2D]">{profile?.fullName || 'Priya Sharma'}</span>
+                  </div>
+
+                  <div className="bg-white/80 p-2.5 rounded-xl border border-slate-200/80">
+                    <span className="text-[10px] text-slate-400 block font-semibold">Doc Token / Reference</span>
+                    <span className="font-mono text-[11px] font-bold text-[#5B4BDB]">
+                      GRT-{previewDoc.id.toUpperCase()}-2026
+                    </span>
+                  </div>
+
+                  <div className="bg-white/80 p-2.5 rounded-xl border border-slate-200/80">
+                    <span className="text-[10px] text-slate-400 block font-semibold">File Name</span>
+                    <span className="font-medium text-slate-700 truncate block">{previewDoc.fileName}</span>
+                  </div>
+
+                  <div className="bg-white/80 p-2.5 rounded-xl border border-slate-200/80">
+                    <span className="text-[10px] text-slate-400 block font-semibold">File Size & Format</span>
+                    <span className="font-medium text-slate-700">{previewDoc.fileSize} • PDF</span>
+                  </div>
+                </div>
+
+                {/* Digital Verification Box */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 text-white mt-2">
+                  <div className="flex items-center gap-2.5">
+                    <QrCode className="w-8 h-8 text-emerald-400 shrink-0" />
+                    <div className="space-y-0.5">
+                      <div className="text-[10px] font-mono text-emerald-400">
+                        SHA256: 7f8a9e2d...{previewDoc.id.slice(-4)}b0
+                      </div>
+                      <div className="text-[11px] text-slate-300">
+                        Cryptographically sealed & eligible for 1-click scholarship attach
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {previewDoc.notes && (
+                <div className="text-[11px] text-slate-500 bg-white/60 p-2.5 rounded-xl border border-slate-200/60 italic">
+                  Note: {previewDoc.notes}
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-between pt-1">
+              {downloadSuccess ? (
+                <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Download initialized!
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDownloadSuccess(true);
+                    setTimeout(() => setDownloadSuccess(false), 3000);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#EEEAFE] hover:bg-indigo-100 text-[#5B4BDB] text-xs font-bold transition-all"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download Copy
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setPreviewDoc(null)}
+                className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition-all"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
+        )}
       </Modal>
     </DashboardLayout>
   );

@@ -85,7 +85,21 @@ function ScholarshipsContent() {
       });
     }
 
-    // 7. Only Eligible filter
+    // 7. Min Amount filter
+    if (filters.minAmount > 0) {
+      result = result.filter((s) => s.amount >= filters.minAmount);
+    }
+
+    // 8. Family Income Limit filter
+    if (filters.maxIncome && filters.maxIncome < 1500000) {
+      result = result.filter(
+        (s) =>
+          !s.eligibilityCriteria.maxIncome ||
+          s.eligibilityCriteria.maxIncome >= filters.maxIncome
+      );
+    }
+
+    // 9. Only Eligible filter
     if (filters.onlyEligible) {
       result = result.filter((s) => {
         const rep = evaluateScholarshipEligibility(s, profile);
@@ -93,7 +107,7 @@ function ScholarshipsContent() {
       });
     }
 
-    // 8. Sorting
+    // 10. Sorting
     result.sort((a, b) => {
       if (filters.sortBy === 'highest_amount') {
         return b.amount - a.amount;
